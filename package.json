@@ -1,0 +1,22 @@
+{
+    "name": "cssa_wechat",
+    "version": "1.0.0",
+    "description": "NodeJS Wechat backend for CSSA",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://CharlieUofT/CSSA_Wechat.git"
+    },
+    "keywords": [
+        "NodeJS"
+    ],
+    "author": "Charlie Hu",
+    "license": "ISC",
+    "dependencies": {
+        "wechat": ">= 2.1.0",
+        "express": ">= 4.15.3"
+    }
+}
