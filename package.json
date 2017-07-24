@@ -1,22 +1,18 @@
 {
-    "name": "cssa_wechat",
-    "version": "1.0.0",
-    "description": "NodeJS Wechat backend for CSSA",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://CharlieUofT/CSSA_Wechat.git"
-    },
-    "keywords": [
-        "NodeJS"
-    ],
-    "author": "Charlie Hu",
-    "license": "ISC",
-    "dependencies": {
-        "wechat": ">= 2.1.0",
-        "express": ">= 4.15.3"
-    }
+  "name": "cssa-wechat",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "jade": "~1.11.0",
+    "morgan": "~1.8.1",
+    "serve-favicon": "~2.4.2",
+    "wechat": "~1.0.0"
+  }
 }
