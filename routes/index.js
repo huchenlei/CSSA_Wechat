@@ -2,10 +2,10 @@ const express = require('express');
 const crypto = require('crypto');
 const router = express.Router();
 
-const token = "helloWechat";
+const token = require('./wechat_config').token;
 
 /* GET home page. */
-router.get('/wx', function (req, res, next) {
+router.get('/', function (req, res, next) {
 
     var signature = req.query.signature;
     var timestamp = req.query.timestamp;
