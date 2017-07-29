@@ -91,7 +91,7 @@ function queryMemberInfo(openId, field) {
         if (!user) throw "Sorry, you are not yet a member of CSSA, please bind a card first";
         if (!(user.detailedInfo && user.detailedInfo[field]))
             throw `The information field ${field} not yet filled, please fill the information first`;
-        return `${field}: ${user[field]}`;
+        return `${field}: ${user.detailedInfo[field]}`;
     }).catch(handleException);
 }
 
@@ -106,7 +106,7 @@ function updateMemberInfo(openId, field, value) {
     return User.findOne({openId: openId}).then((user) => {
         if (!user) throw "Sorry, you are not yet a member of CSSA, please bind a card first";
         if (!(user.detailedInfo && user.detailedInfo[field])) return `Previously ${field} not set.`;
-        return `Previously ${field} is ${user.detailedInfo[field]}.`
+      return `Previously ${field} is ${user.detailedInfo[field]}.`;
     }).then((message) => {
         let update = {};
         update[`detailedInfo.${field}`] = value;
