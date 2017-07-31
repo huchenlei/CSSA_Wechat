@@ -6,10 +6,9 @@ const express = require('express');
 const router = express.Router();
 
 /**
- * User scan QR code to sign-up for CSSA membership
+ * User scan QR code convert the qr code to a code copy page
  */
-router.get('/user/sign_up', function (req, res, next) {
-    // TODO QR code get OpenID wechat SDK
+router.get('/convert/qrcode', function (req, res, next) {
     res.send('respond with a resource');
 });
 

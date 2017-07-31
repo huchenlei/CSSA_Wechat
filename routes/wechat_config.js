@@ -1,4 +1,7 @@
-const wechat = require('wechat');
+/**
+ * This is the configs for wechat official account app to talk to Tencent's server
+ * @type {{token: string, appid: string, encodingAESKey: string, checkSignature: boolean}}
+ */
 const config = {
     token: 'helloCSSA',
     appid: 'wx706d50cf10d5536e',

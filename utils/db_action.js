@@ -15,6 +15,8 @@ const userSchema = mongoose.Schema({
         name: String,
         graduation: Number,
         discipline: String,
+        email: String,
+        phone: String
     },
     cssaCardNumber: String,
     cardAvailable: Boolean

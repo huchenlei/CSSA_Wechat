@@ -14,12 +14,19 @@ const db_action = require('../utils/db_action');
  * @return Promise
  */
 function processCommandlineInput(message, openId) {
-    const memberInfoFields = ["name", "discipline", "graduation"];
-    const usage = `
-bind \<CSSA card number\> : bind wechat id with CSSA card number. The action is permanent.
-check  \<field\>          : check the existing member information.
-update \<field\> \<text\> : update member information(field: ${memberInfoFields.join(", ")})
-validate                  : validate the membership of current wechat user`;
+    const memberInfoFields = ["name", "discipline", "graduation", "email", "phone"];
+    const usage = `Usage:
+bind \<CSSA card number\> 
+bind wechat id with CSSA card number. The action is permanent.
+
+check  \<field\>
+check the existing member information.
+
+update \<field\> \<text\> 
+update member information\(field: ${memberInfoFields.join(", ")}\)
+
+validate
+validate the membership of current wechat user`;
 
     const messageTokens = message.split(' ');
     const command = messageTokens[0];
@@ -55,17 +62,18 @@ validate                  : validate the membership of current wechat user`;
 const config = require('./wechat_config');
 router.use(express.query());
 router.use('/', wechat(config, function (req, res, next) {
-  function replyMessage(message) {
-    console.log(`Replying ${message}`);
-    res.reply(message);
-  }
+    function replyMessage(message) {
+        console.log(`Replying ${message}`);
+        res.reply(message);
+    }
+
     const data = req.weixin;
     const message = data.Content;
     const openId = data.FromUserName;
     try {
-      processCommandlineInput(message, openId).then(replyMessage);
+        processCommandlineInput(message, openId).then(replyMessage);
     } catch (e) {
-      replyMessage(e);
+        replyMessage(e);
     }
 }));
 

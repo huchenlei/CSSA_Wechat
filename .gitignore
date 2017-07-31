@@ -3,3 +3,12 @@ node_modules/
 
 # idea stuffs
 .idea/
+
+# private key file
+data/card-pool-private.json
+
+# qrcode-img files
+data/qrcode-img/
+
+# qrcode-html file
+data/qrcode.html
