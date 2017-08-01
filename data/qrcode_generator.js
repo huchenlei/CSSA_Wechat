@@ -15,10 +15,14 @@ function zeroPad(num, places) {
 const args = process.argv.slice(2); // the first 2 params are node and .js file
 
 if (args.length === 0)
-    console.log("Usage: node <THIS_FILE.js> <DATA_FILE> <OUTPUT_DIR> <HTML_OUTPUT_FILE>");
+    console.log("Usage: node <THIS_FILE.js> <DATA_FILE> <OUTPUT_DIR> <HTML_OUTPUT_FILE> <COL_NUM>");
 const DATA_FILE = args[0] ? args[0] : './card-pool-private.json';
 const OUTPUT_DIR = args[1] ? args[1] : './qrcode-img';
 const HTML_OUTPUT_FILE = args[2] ? args[2] : './qrcode.html';
+const COL_NUM = args[3] ? args[3] : 3; // number of table column(td) in output html file
+
+const SERVER_ADDRESS = "138.197.149.174";
+const SERVER_ROUTE = "/user/convert/qrcode";
 
 if (fs.existsSync(OUTPUT_DIR)) fsExtra.removeSync(OUTPUT_DIR); // Delete the original dir if it already existse
 fs.mkdirSync(OUTPUT_DIR);
@@ -29,8 +33,9 @@ let indexSpanList = [];
 
 for (let i = 0; i < cardPool.length; i++) {
     const fileName = `${OUTPUT_DIR}/qrcode${i}.png`;
+    const url = `http://${SERVER_ADDRESS}${SERVER_ROUTE}?serial=${cardPool[i]}`;
     // Generate qrcode file
-    qrcode.toFile(fileName, cardPool[i], {errorCorrectionLevel: 'M'}, (err) => {
+    qrcode.toFile(fileName, url, {errorCorrectionLevel: 'M'}, (err) => {
         if (err) throw err; // temp error handling
     });
     // reference qrcode file in html
@@ -39,9 +44,8 @@ for (let i = 0; i < cardPool.length; i++) {
 }
 
 // format the html for printing
-const COL_NUM = 3; // number of table column(td)
 let dataStr = '';
-for (let i = 0; i < cardPool.length; i+=COL_NUM) {
+for (let i = 0; i < cardPool.length; i += COL_NUM) {
     let imgRow = '';
     let spanRow = '';
     for (let j = 0; j < COL_NUM; j++) {
@@ -49,11 +53,7 @@ for (let i = 0; i < cardPool.length; i+=COL_NUM) {
         imgRow = imgRow + qrcodeImgList[i + j];
         spanRow = spanRow + indexSpanList[i + j];
     }
-    dataStr = dataStr +
-            `<table>
-<tr>${imgRow}</tr>
-<tr>${spanRow}</tr>
-</table>`;
+    dataStr = dataStr + `<table><tr>${imgRow}</tr><tr>${spanRow}</tr></table>`;
 }
 
 const html_template = `<!DOCTYPE html>

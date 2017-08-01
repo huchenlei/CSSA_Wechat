@@ -1,0 +1,13 @@
+//
+   Created by Charlie on 2017-07-31.
+
+extends layout
+block content
+    script(src="/javascripts/clipboard.js")
+    script new Clipboard('.btn');
+    style #serial-target {margin: 20px;} .btn {}
+    h3 Please send following command to our official account
+    code#serial-target bind #{serial}
+    button.btn#serial-trigger(data-clipboard-target="#serial-target") Copy to clipboard
+
+
