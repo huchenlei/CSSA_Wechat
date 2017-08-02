@@ -12,11 +12,11 @@ const testConfig = {
 
 const config = {
     token: 'nMEMFobtKGvmxumienzQ',
-    appid: '',
+    appid: 'wxb3d39e3729626373',
     encodingAESKey: 'aYDHJAgLTkJdxVNUPOvojWTdmKrURtyqfYFaHiLjELB',
-    appSecret: '',
+    appSecret: '', // TODO
     checkSignature: false
 };
 
-module.exports = testConfig;
+module.exports = config;
 
