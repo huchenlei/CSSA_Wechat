@@ -59,7 +59,7 @@ validate the membership of current wechat user`;
     }
 }
 
-const config = require('./wechat_config');
+const config = require('./../config/wechat_config');
 router.use(express.query());
 router.post('/', wechat(config, function (req, res, next) {
     function replyMessage(message) {
@@ -76,9 +76,5 @@ router.post('/', wechat(config, function (req, res, next) {
         replyMessage(e);
     }
 }));
-
-// router.get('/', function (req, res, next) {
-//     res.send("Hello world")
-// });
 
 module.exports = router;
