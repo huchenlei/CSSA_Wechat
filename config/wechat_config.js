@@ -18,5 +18,14 @@ const config = {
     checkSignature: false
 };
 
-module.exports = config;
+// Config on wechat dev platform
+const testConfig2 = {
+  appid: 'wx1bcdcfacf978464c',
+  appSecret: '20f14890f637a3a1a11d00e739de50a6',
+  token: 'nMEMFobtKGvmxumienzQ',
+  encodingAESKey: 'aYDHJAgLTkJdxVNUPOvojWTdmKrURtyqfYFaHiLjELB',
+  checkSignature: false
+};
+
+module.exports = testConfig2;
 

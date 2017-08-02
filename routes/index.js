@@ -68,11 +68,21 @@ router.post('/', wechat(config, function (req, res, next) {
         res.reply(message);
     }
 
-    const data = req.weixin;
-    const message = data.Content;
-    const openId = data.FromUserName;
+  const data = req.weixin;
+  const openId = data.FromUserName;
+  // console.log(data);
+  let message;
+  if (data.Event && (data.Event === 'scancode_waitmsg')) { // QRCode scan bind card
+    const scanUrl = data.ScanCodeInfo.ScanResult;
+    const serial = /http:\/\/.+?\?serial=(.+)$/.exec(scanUrl)[1]; // Extract serial code from url
+    console.log(`serial is ${serial}`);
+    message = `bind ${serial}`;
+  } else {
+    message = data.Content;
+  }
+
     try {
-        processCommandlineInput(message, openId).then(replyMessage);
+        processCommandlineInput(message, openId).then(replyMessage); 
     } catch (e) {
         replyMessage(e);
     }
