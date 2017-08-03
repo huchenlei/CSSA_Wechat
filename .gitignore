@@ -12,3 +12,6 @@ data/qrcode-img/
 
 # qrcode-html file
 data/qrcode.html
+
+# emacs temp file
+~#*

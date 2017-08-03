@@ -14,4 +14,17 @@ router.get('/convert/qrcode', function (req, res, next) {
     res.render('serial_number.jade');
 });
 
+router.get('/info', function (req, res) {
+    res.locals.user = {
+        name: "Charlie",
+        graduation: "2019",
+        discipline: "ECE",
+        email: "charlie.hu@mail.utoronto.ca",
+        phone: "666-999-4444"
+    };
+    res.locals.openId = "12345";
+    res.locals.title = "Member Info";
+    res.render('user_info.jade');
+});
+
 module.exports = router;

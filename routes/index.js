@@ -68,52 +68,54 @@ router.post('/', wechat(config, function (req, res, next) {
         res.reply(message);
     }
 
-  const data = req.weixin;
-  const openId = data.FromUserName;
-  // console.log(data);
-  let message;
-  if (data.Event && (data.Event === 'scancode_waitmsg')) { // QRCode scan bind card
-    const scanUrl = data.ScanCodeInfo.ScanResult;
-    const serial = /http:\/\/.+?\?serial=(.+)$/.exec(scanUrl)[1]; // Extract serial code from url
-    console.log(`serial is ${serial}`);
-    message = `bind ${serial}`;
-  } else {
-    message = data.Content;
-  }
+    const data = req.weixin;
+    console.log(`data pack is ${data}`); // Debugging
+    const openId = data.FromUserName;
+
+    let message;
+    if (data.Event && (data.Event === 'scancode_waitmsg')) { // QRCode scan bind card
+        const scanUrl = data.ScanCodeInfo.ScanResult;
+        const serial = /http:\/\/.+?\?serial=(.+)$/.exec(scanUrl)[1]; // Extract serial code from url
+        console.log(`serial is ${serial}`);
+        message = `bind ${serial}`;
+    } else {
+        message = data.Content;
+    }
 
     try {
-        processCommandlineInput(message, openId).then(replyMessage); 
+        processCommandlineInput(message, openId).then(replyMessage);
     } catch (e) {
         replyMessage(e);
     }
 }));
 
 
-/* GET validate token. */
-router.get('/', function (req, res, next) {
-  const token = config.token;
-  var signature = req.query.signature;
-  var timestamp = req.query.timestamp;
-  var nonce = req.query.nonce;
-  var echostr = req.query.echostr;
+/**
+ * Wechat token validate
+ */
+router.get('/', function (req, res) {
+    const token = config.token;
+    const signature = req.query.signature;
+    const timestamp = req.query.timestamp;
+    const nonce = req.query.nonce;
+    const echostr = req.query.echostr;
 
-  /*  加密/校验流程如下： */
-  //1. 将token、timestamp、nonce三个参数进行字典序排序
-  var array = [token, timestamp, nonce];
-  array.sort();
-  var str = array.toString().replace(/,/g, "");
+    /*  加密/校验流程如下： */
+    //1. 将token、timestamp、nonce三个参数进行字典序排序
+    let array = [token, timestamp, nonce];
+    array.sort();
+    const str = array.toString().replace(/,/g, "");
 
-  //2. 将三个参数字符串拼接成一个字符串进行sha1加密
-  var sha1Code = crypto.createHash("sha1");
-  var code = sha1Code.update(str, 'utf-8').digest("hex");
+    //2. 将三个参数字符串拼接成一个字符串进行sha1加密
+    const sha1Code = crypto.createHash("sha1");
+    const code = sha1Code.update(str, 'utf-8').digest("hex");
 
-  //3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
-  if (code === signature) {
-    res.send(echostr);
-  } else {
-    res.send("error");
-  }
-
+    //3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
+    if (code === signature) {
+        res.send(echostr);
+    } else {
+        res.send("error");
+    }
 });
 
 module.exports = router;
