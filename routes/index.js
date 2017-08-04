@@ -12,7 +12,7 @@ const db_action = require('../utils/db_action');
  * This function dispatches user input to different database related actions
  * @param message user commandline input
  * @param openId
- * @return Promise
+ * @return Object
  */
 function processCommandlineInput(message, openId) {
     const memberInfoFields = ["name", "discipline", "graduation", "email", "phone"];
@@ -51,7 +51,9 @@ validate the membership of current wechat user`;
         if (!memberInfoFields.includes(field)) {
             throw `field options: ${memberInfoFields.join(", ")}`;
         }
-        return db_action.updateMemberInfo(openId, field, value);
+        let newInfo = {};
+        newInfo[field] = value;
+        return db_action.updateMemberInfo(openId, newInfo);
     } else if (command === "validate") {
         checkParamNumber(0);
         return db_action.validateMember(openId);
@@ -83,7 +85,9 @@ router.post('/', wechat(config, function (req, res, next) {
     }
 
     try {
-        processCommandlineInput(message, openId).then(replyMessage);
+        processCommandlineInput(message, openId).then((result) => {
+            replyMessage(result['msg']);
+        });
     } catch (e) {
         replyMessage(e);
     }
