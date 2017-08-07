@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const express = require('express');
 const wechat = require('wechat');
 const router = express.Router();
-const db_action = require('../utils/db_action');
+// const db_action = require('../utils/db_action');
 
 /**
  * This function dispatches user input to different database related actions

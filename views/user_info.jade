@@ -2,27 +2,32 @@
    Created by Charlie on 2017-08-02.
 
 extends layout
-mixin input-field(field, value)
-    .row
-        span.req-input
-            span.input-status(data-toggle="tooltip" data-placement="top"
-            title="#{field}")
-            input.form-control(id="#{field}" value="#{value}" type="text" placeholder="#{field}")
+mixin input-field(field, value, type,dataList)
+    .weui-cell
+        .weui-cell__hd
+            label.weui-label(for=field)=field
+        .weui-cell__bd
+            input.weui-input(type=type, name=field, id=field,value=value, list=dataList)
 
 block content
     link(rel="stylesheet" href="/stylesheets/user_info.css")
-    .main.container
-        .row
-            .col-md-6.col-md-offset-3
-                .form-container
-                    form(method='POST' action='/user/update_info')
-                        .row
-                            .form-title
-                                span Member Info
-                        .input-container
-                        - var fields = ["name", "discipline", "graduation", "email", "phone"];
-                        for field in fields
-                            +input-field(field, user[field])
-                        input#open-id(type="hidden" value="#{openId}")
-                        button.btn.btn-primary(type='submit') Save
-
+    .container
+        h1.center_text Member Info
+        form(method='POST' action='/user/update_info')
+            .input-container
+            - var fields = [["name","text"],["graduation","date"],["email","email"],["phone","tel"]];
+            for field in fields
+                +input-field(field[0], user[field[0]],field[1])
+            +input-field("discipline",user.discipline,"text","disciplines")
+            datalist#disciplines
+                option ECE
+                option EngSci
+                option Chem
+                option Civ
+                option Mech
+                option Indy
+                option Material
+                option Mining
+            input#open-id(type="hidden" value="#{openId}")
+            button.weui-btn.weui-btn_primary(type='submit') Save
+    script(src="/javascripts/user_info.js")
