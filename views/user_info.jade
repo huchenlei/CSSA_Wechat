@@ -20,8 +20,9 @@ block content
                             .form-title
                                 span Member Info
                         .input-container
-                        each value, field in user
-                            +input-field(field, value)
+                        - var fields = ["name", "discipline", "graduation", "email", "phone"];
+                        for field in fields
+                            +input-field(field, user[field])
                         input#open-id(type="hidden" value="#{openId}")
                         button.btn.btn-primary(type='submit') Save
 

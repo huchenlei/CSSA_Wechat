@@ -68,34 +68,6 @@ async function deleteMenuItem(accessToken) {
     return await request(options);
 }
 
-getAccessToken().then(queryMenuItem).then(console.log);
-
-//
-// getAccessToken().then((token) => {
-//     createMenuItem(token, [
-//         {
-//             "name": "扫码",
-//             "sub_button": [
-//                 {
-//                     "type": "scancode_waitmsg",
-//                     "name": "扫码带提示",
-//                     "key": "rselfmenu_0_0",
-//                     "sub_button": []
-//                 },
-//                 {
-//                     "type": "scancode_push",
-//                     "name": "扫码推事件",
-//                     "key": "rselfmenu_0_1",
-//                     "sub_button": []
-//                 }
-//             ]
-//         },
-//     ]);
-//     return token;
-// })
-//     .then(queryMenuItem)
-//     .then(console.log)
-//     .catch(console.error);
 
 module.exports = {
     getAccessToken, createMenuItem, queryMenuItem, deleteMenuItem

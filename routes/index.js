@@ -77,9 +77,18 @@ router.post('/', wechat(config, function (req, res, next) {
     let message;
     if (data.Event && (data.Event === 'scancode_waitmsg')) { // QRCode scan bind card
         const scanUrl = data.ScanCodeInfo.ScanResult;
-        const serial = /http:\/\/.+?\?serial=(.+)$/.exec(scanUrl)[1]; // Extract serial code from url
+        const urlPattern = /'http:\/\/.+?\?serial=(.+)$'/;
+        let serial;
+        if (urlPattern.test(scanUrl)) {
+            serial = urlPattern.exec(scanUrl)[1]; // Extract serial code from url
+        } else { // Handle invalid scanning
+            replyMessage("Sorry, the QR code is invalid.");
+            return;
+        }
         console.log(`serial is ${serial}`);
         message = `bind ${serial}`;
+    } else if (data.Event === 'VIEW') { // click on member info
+        return; // User will be redirect to info page so do nothing here
     } else {
         message = data.Content;
     }
