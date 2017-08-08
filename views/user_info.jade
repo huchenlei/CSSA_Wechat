@@ -10,6 +10,8 @@ mixin input-field(field, value, type,dataList)
             input.weui-input(type=type, name=field, id=field,value=value, list=dataList)
 
 block content
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui")
+    link(rel="stylesheet", href="/stylesheets/weui.css")
     link(rel="stylesheet" href="/stylesheets/user_info.css")
     .container
         h1.center_text Member Info

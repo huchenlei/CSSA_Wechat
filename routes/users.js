@@ -48,8 +48,8 @@ router.route('/')
             res.locals.openId = openId;
             res.locals.title = "Member Info";
             res.render('user_info.jade');
-        }).catch((err) => {
-            res.locals.message = typeof err === "string" ? err : "Unknown issue encountered";
+        }).catch((e) => {
+            res.locals.message = typeof e === "string" ? e : "Unknown issue encountered";
             res.render('error.jade');
         });
     });

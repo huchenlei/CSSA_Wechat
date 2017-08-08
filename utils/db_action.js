@@ -3,6 +3,7 @@
  * Executing this file directly will initialize database data from card-number-pool json file
  */
 const crypto = require('crypto');
+const assert = require('assert');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const encryptCardId = require('./encrypter').encrypt;
@@ -22,9 +23,14 @@ const userSchema = mongoose.Schema({
     cardAvailable: Boolean
 }, {minimize: false});
 
-const collectionName = 'users';
+const disciplineSchema = mongoose.Schema({
+    name: {type: String, required: true, unique: true, dropDups: true}
+});
+
 const conn = mongoose.createConnection('mongodb://localhost:27017/CssaWechat', {useMongoClient: true});
-const User = conn.model(collectionName, userSchema); // The user model(use users collection in database)
+const User = conn.model('users', userSchema); // The user model(use users collection in database)
+const Discipline = conn.model('disciplines', disciplineSchema);
+
 conn.on('error', console.error.bind(console, 'connection error:'));
 
 const USER_INFO_FIELDS = Object.keys(new User().detailedInfo);
@@ -143,6 +149,42 @@ async function validateMember(openId) {
         } : {'msg': "Sorry, you are not a member of CSSA.", 'data': false}
 }
 
+/**
+ * Add new discipline to discipline list
+ * @param name
+ */
+async function addDiscipline(name) {
+    assert(typeof name === 'string');
+    let newDiscipline = new Discipline();
+    newDiscipline.name = name;
+    return await newDiscipline.save();
+}
+
+/**
+ * Return all disciplines
+ * @return {*|{}|T|Query}
+ */
+async function getDisciplines() {
+    return await Discipline.find();
+}
+
+/**
+ * Merge multiple disciplines with different names but essentially the same
+ * [WARNING] reserved api for admin users
+ * @param targetDis the final discipline obj of all disciplines listed
+ * @param dList discipline list to be replaced by the target
+ */
+async function mergeDisciplines(targetDis, dList) {
+    assert(dList instanceof Array, 'dList must be an array!');
+    assert(typeof targetDis === 'string', 'targetDis must be string');
+    for (const discipline of dList) {
+        assert(typeof discipline === 'string');
+        // remove duplications in Discipline collection
+        await Discipline.remove({name: discipline}).exec();
+        // update the discipline field in user schema
+        await User.updateMany({'detailedInfo.discipline': discipline}, {$set: {'detailedInfo.discipline': targetDis}});
+    }
+}
 
 module.exports = {
     addAvailableCards,
@@ -151,5 +193,9 @@ module.exports = {
     queryMemberInfo,
     updateMemberInfo,
     validateMember,
+
+    addDiscipline,
+    getDisciplines,
+    mergeDisciplines,
     USER_INFO_FIELDS
 };
