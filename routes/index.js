@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const express = require('express');
 const wechat = require('wechat');
 const router = express.Router();
-// const db_action = require('../utils/db_action');
+const dbAction = require('../utils/db_action');
 
 /**
  * This function dispatches user input to different database related actions
@@ -15,7 +15,7 @@ const router = express.Router();
  * @return Object
  */
 function processCommandlineInput(message, openId) {
-    const memberInfoFields = ["name", "discipline", "graduation", "email", "phone"];
+    const memberInfoFields = dbAction.USER_INFO_FIELDS;
     const usage = `Usage:
 bind \<CSSA card number\> 
 bind wechat id with CSSA card number. The action is permanent.
@@ -39,11 +39,11 @@ validate the membership of current wechat user`;
     if (command === "bind") {
         checkParamNumber(1);
         // Bind the wechat openid to corresponding card number
-        return db_action.bindUser(openId, messageTokens[1]);
+        return dbAction.bindUser(openId, messageTokens[1]);
     } else if (command === "check") {
         checkParamNumber(1);
         const field = messageTokens[1];
-        return db_action.queryMemberInfo(openId, field);
+        return dbAction.queryMemberInfo(openId, field);
     } else if (command === "update") {
         checkParamNumber(2);
         const field = messageTokens[1];
@@ -53,10 +53,10 @@ validate the membership of current wechat user`;
         }
         let newInfo = {};
         newInfo[field] = value;
-        return db_action.updateMemberInfo(openId, newInfo);
+        return dbAction.updateMemberInfo(openId, newInfo);
     } else if (command === "validate") {
         checkParamNumber(0);
-        return db_action.validateMember(openId);
+        return dbAction.validateMember(openId);
     } else {
         throw usage;
     }

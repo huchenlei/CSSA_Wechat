@@ -4,7 +4,7 @@
 
 const wechatAction = require('./wechat_action');
 const config = require('../config/wechat_config');
-const originalUrl = "http://138.197.149.174/user";
+const originalUrl = encodeURIComponent("http://138.197.149.174/user");
 const scope = 'snsapi_base';
 const oauthUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appid}&redirect_uri=${originalUrl}&response_type=code&scope=${scope}`;
 wechatAction.getAccessToken().then((token) => {
