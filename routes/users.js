@@ -54,7 +54,8 @@ router.route('/')
 
 router.route('/:openId')
     .get(function (req, res) {
-        dbAction.queryMemberInfo(req.params.openId)
+        const openId = req.params.openId;
+        dbAction.queryMemberInfo(openId)
             .then((dbResult) => {
                 const user = dbResult.data;
                 if (req.xhr || req.headers.accept.indexOf('json') > -1) {
