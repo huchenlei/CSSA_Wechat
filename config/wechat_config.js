@@ -10,11 +10,12 @@ const testConfig = {
     checkSignature: false // 可选，默认为true。由于微信公众平台接口调试工具在明文模式下不发送签名，所以如要使用该测试工具，请将其设置为false
 };
 
+// Production config
 const config = {
     token: 'nMEMFobtKGvmxumienzQ',
     appid: 'wxb3d39e3729626373',
     encodingAESKey: 'aYDHJAgLTkJdxVNUPOvojWTdmKrURtyqfYFaHiLjELB',
-    appSecret: '', // TODO
+    appSecret: '4fa9865f1fe1847580aa20cc7e915562',
     checkSignature: false
 };
 

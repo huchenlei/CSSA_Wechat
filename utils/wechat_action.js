@@ -68,9 +68,22 @@ async function deleteMenuItem(accessToken) {
     return await request(options);
 }
 
+async function getMaterialList(accessToken, type, offset, count) {
+    const options = {
+        method: 'POST',
+        uri: `https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=${accessToken}`,
+        body: {
+            type: type, // news, voice, image, video
+            offset: offset,
+            count: count // between 1 ~ 20
+        },
+        json: true
+    };
+    return await request(options);
+}
 
 module.exports = {
-    getAccessToken, createMenuItem, queryMenuItem, deleteMenuItem
+    getAccessToken, createMenuItem, queryMenuItem, deleteMenuItem, getMaterialList
 };
 
 

@@ -21,7 +21,8 @@ const OUTPUT_DIR = args[1] ? args[1] : './qrcode-img';
 const HTML_OUTPUT_FILE = args[2] ? args[2] : './qrcode.html';
 const COL_NUM = args[3] ? args[3] : 3; // number of table column(td) in output html file
 
-const SERVER_ADDRESS = "138.197.149.174";
+// const SERVER_ADDRESS = "138.197.149.174";
+const SERVER_ADDRESS = "utcssa.info";
 const SERVER_ROUTE = "/user/convert/qrcode";
 
 if (fs.existsSync(OUTPUT_DIR)) fsExtra.removeSync(OUTPUT_DIR); // Delete the original dir if it already existse

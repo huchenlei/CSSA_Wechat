@@ -8,6 +8,8 @@ const wechat = require('wechat');
 const router = express.Router();
 const dbAction = require('../utils/db_action');
 
+const DOMAIN_ADDRESS = "utcssa.info";
+
 /**
  * This function dispatches user input to different database related actions
  * @param message user commandline input
@@ -75,20 +77,42 @@ router.post('/', wechat(config, function (req, res, next) {
     const openId = data.FromUserName;
 
     let message;
-    if (data.Event && (data.Event === 'scancode_waitmsg')) { // QRCode scan bind card
-        const scanUrl = data.ScanCodeInfo.ScanResult;
-        const urlPattern = /'http:\/\/.+?\?serial=(.+)$'/;
-        let serial;
-        if (urlPattern.test(scanUrl)) {
-            serial = urlPattern.exec(scanUrl)[1]; // Extract serial code from url
-        } else { // Handle invalid scanning
-            replyMessage("Sorry, the QR code is invalid.");
-            return;
+    if (data.Event) {
+        if (data.Event === 'scancode_waitmsg') { // QRCode scan bind card
+            const scanUrl = data.ScanCodeInfo.ScanResult;
+            const urlPattern = /'http:\/\/.+?\?serial=(.+)$'/;
+            let serial;
+            if (urlPattern.test(scanUrl)) {
+                serial = urlPattern.exec(scanUrl)[1]; // Extract serial code from url
+            } else { // Handle invalid scanning
+                replyMessage("Sorry, the QR code is invalid.");
+                return;
+            }
+            console.log(`serial is ${serial}`);
+            message = `bind ${serial}`;
+        } else if (data.Event === 'VIEW') { // click on member info(OAUTH version)
+            return; // User will be redirect to info page; do nothing here
+        } else if (data.Event === 'CLICK') {
+            if (data.EventKey === 'member_info') { // click on member info
+                // Send member info page
+                dbAction.validateMember(openId).then((dbResult) => {
+                    if (dbResult.data) {
+                        replyMessage(
+                            [{
+                                title: 'Member Info',
+                                description: 'Check&Update your information',
+                                url: `http://${DOMAIN_ADDRESS}/user/${openId}` // Dynamically construct URL
+                            }]
+                        );
+                    } else { // Not yet member
+                        replyMessage(dbResult.msg);
+                    }
+                });
+                return;
+            } else { // click on other menu options
+                // Send corresponding articles
+            }
         }
-        console.log(`serial is ${serial}`);
-        message = `bind ${serial}`;
-    } else if (data.Event === 'VIEW') { // click on member info
-        return; // User will be redirect to info page so do nothing here
     } else {
         message = data.Content;
     }
@@ -100,6 +124,8 @@ router.post('/', wechat(config, function (req, res, next) {
     } catch (e) {
         replyMessage(e);
     }
+    // Continue with other routes
+    next();
 }));
 
 

@@ -3,7 +3,7 @@
  * Created by Charlie on 2017-07-27.
  */
 
-const dbAction = require('./db_action');
+const dbAction = require('./../utils/db_action');
 const fs = require('fs');
 
 const cardPool = JSON.parse(fs.readFileSync('../data/card-pool-private.json'));

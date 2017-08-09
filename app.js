@@ -34,7 +34,19 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-// error handler
+// Handle Ajax request errors
+app.use(function (err, req, res, next) {
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        res.json({
+          'status': -1,
+          'error': err
+        });
+    } else {
+        next(err);
+    }
+});
+
+// default error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;

@@ -19,22 +19,14 @@ router.route('/')
                 jsonResult.push(_.pick(item, ['name']));
             });
             res.json(jsonResult);
-        }).catch((e) => {
-            res.json({
-                status: -1,
-                errmsg: e
-            });
-        });
+        })
     })
     .post((req, res) => {
-    console.log(req.body.name);
+        console.log(req.body.name);
         dbAction.addDiscipline(req.body.name).then((dbResult) => {
             res.json({
                 status: 0
             });
-        }).catch((e) => {
-            res.locals.message = e;
-            res.render('error');
         })
     });
 

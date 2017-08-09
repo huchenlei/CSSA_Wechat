@@ -26,6 +26,9 @@ router.get('/convert/qrcode', function (req, res) {
  * RESTful API for user actions
  */
 router.route('/')
+/**
+ * @Deprecated The un-certified wechat official account cannot use oauth interface
+ */
     .get(function (req, res) {
         const code = req.query['code'];
         const options = {
@@ -35,7 +38,6 @@ router.route('/')
         };
         let openId; // expose openId in higher scope
         request(options).then((data) => {
-            console.log('data is ' + JSON.stringify(data)); // Debug log
             if (data['errcode']) {
                 throw `${data['errcode']}: ${data['errmsg']}`;
             } else {
@@ -43,26 +45,27 @@ router.route('/')
                 return openId;
             }
         }).then(dbAction.queryMemberInfo).then((dbResult) => {
-            console.log('user is ' + JSON.stringify(dbResult.data)); // Debug log
             res.locals.user = dbResult.data;
             res.locals.openId = openId;
             res.locals.title = "Member Info";
-            res.render('user_info.jade');
-        }).catch((e) => {
-            res.locals.message = typeof e === "string" ? e : "Unknown issue encountered";
-            res.render('error.jade');
-        });
+            res.render('user_info');
+        })
     });
 
 router.route('/:openId')
     .get(function (req, res) {
         dbAction.queryMemberInfo(req.params.openId)
             .then((dbResult) => {
-                res.json(dbResult.data);
+                const user = dbResult.data;
+                if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                    res.json(user);
+                } else {
+                    res.locals.user = user;
+                    res.locals.openId = openId;
+                    res.locals.title = "Member Info";
+                    res.render('user_info');
+                }
             })
-            .catch((e) => {
-                res.json({errmsg: e});
-            });
     })
     .put(function (req, res) {
         const newInfo = _.pick(req.body, dbAction.USER_INFO_FIELDS);
@@ -73,12 +76,6 @@ router.route('/:openId')
                     status: 0
                 });
             })
-            .catch((e) => {
-                res.json({
-                    status: -1,
-                    errmsg: e
-                });
-            });
     });
 
 /**
