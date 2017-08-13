@@ -13,6 +13,7 @@ const _ = require('lodash');
 // router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 // router.use(bodyParser.json());
 const parseMultipart = require('multer')().array()//need to use multer to parse ajax form data
+require('../tests/test_db_action')
 
 /**
  * User scan QR code convert the qr code to a code copy page
@@ -85,7 +86,7 @@ router.route('/:openId')
  */
 router
     .get("/test/ing", async (req, res) => {
-        console.log(req.params, 'params')
+        // console.log(req.params, 'params')
         res.locals.user = {
             name: "Rain",
             graduation: "2017-05-31",
@@ -95,23 +96,25 @@ router
         };
         res.locals.title = "Member Info";
         res.locals.openId = req.params.openId;
-        // res.locals.disciplines = await dbAction.getDisciplines()
-        res.locals.disciplines = ["ECE", "EngSci", "Chem", "Civ", "Mech", "Indy", "Material", "Mining",]//after db is prepopulated this can be removed
-        console.log('disciplines', await dbAction.getDisciplines())
+        res.locals.disciplines = await dbAction.getDisciplines()
+        // console.log('disciplines', res.locals.disciplines)
         res.render('user_info.jade');
     })
     .put("/test/ing", parseMultipart, async (req, res) => {
         console.log('requestbody', req.body)
         const { name, graduation, email, phone, discipline, openId } = req.body
-        // const disciplines = await dbAction.getDisciplines()
-        const disciplines = ["ECE", "EngSci", "Chem", "Civ", "Mech", "Indy", "Material", "Mining",]//after db is prepopulated this can be removed
-        // TODO: fix promise reject issue
-        // if (!disciplines.includes(discipline)) {
-        //     await dbAction.addDiscipline(discipline)
-        // }
-        // await dbAction.updateMemberInfo(openId, { name, graduation, email, phone, discipline })
-        res.json({ type: "success" });
-        // res.json({ type: "error" });
+        const disciplines = (await dbAction.getDisciplines()).map(({ name }) => name)
+        console.log(disciplines)
+        try {
+            if (!disciplines.includes(discipline)) {
+                await dbAction.addDiscipline(discipline)
+            }
+            await dbAction.updateMemberInfo(openId, { name, graduation, email, phone, discipline })
+            res.json({ type: "success" });
+        }
+        catch (err) {
+            res.json({ type: "error", message: err });
+        }
     })
 
 

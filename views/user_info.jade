@@ -23,7 +23,7 @@ block content
             +input-field("discipline",user.discipline,"text","disciplines")
             datalist#disciplines
                 for discipline in disciplines
-                    option=discipline
+                    option=discipline.name
             input#open-id(type="hidden" name="openId" value="#{openId}")
             button.weui-btn.weui-btn_primary(type='submit') Submit
     script(src="/javascripts/user_info.js")

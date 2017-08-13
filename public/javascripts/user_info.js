@@ -7,6 +7,7 @@ form.onsubmit = async ev => {
     // }
     const mockOpenID = 12345
     const submitbutton = ev.target.lastElementChild
+    submitbutton.disabled = true
     submitbutton.classList.add('weui-btn_loading')
     submitbutton.innerHTML = ' <i class="weui-loading"> </i> '
     const data = JSON.parse(await put("/user/test/ing", memberinfo))
@@ -17,9 +18,10 @@ form.onsubmit = async ev => {
         // prevent user from submitting a second time
         form.onsubmit = ev => ev.preventDefault()
     } else {
-        submitbutton.innerHTML = "something wrong"
+        submitbutton.innerHTML = "✘"
         submitbutton.classList.add('weui-btn_warn')
         setTimeout(() => {
+            submitbutton.disabled = false
             submitbutton.innerHTML = "Submit"
             submitbutton.classList.remove('weui-btn_warn')
         }, 1000)

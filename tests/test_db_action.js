@@ -6,9 +6,12 @@
 const dbAction = require('./../utils/db_action');
 const fs = require('fs');
 
-const cardPool = JSON.parse(fs.readFileSync('../data/card-pool-private.json'));
+// const cardPool = JSON.parse(fs.readFileSync('../data/card-pool-private.json'));
 const openId = "1234";
-// dbAction.initializeDB();
+dbAction.initializeDB();
+// disciplines.forEach(dis => {
+//     dbAction.addDiscipline(dis)
+// })
 // dbAction.bindUser(openId, cardPool[1]).then(console.log);
 // dbAction.queryMemberInfo(openId, "name").then(console.log);
 // dbAction.queryMemberInfo(openId).then(console.log);
