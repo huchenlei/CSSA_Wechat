@@ -1,0 +1,19 @@
+.weui-cell{
+    padding-left: 0;
+    padding-right: 0;
+}
+h1{
+    text-align: center;
+}
+.discipline>i{
+    padding: 0 0.5rem;
+}
+.global-actions{
+    display: flex;
+}
+.weui-btn{
+    margin: 1rem;
+}
+.weui-btn:first-child,.weui-btn:last-child{
+    margin: 1rem 0;
+}

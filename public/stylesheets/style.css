@@ -5,3 +5,13 @@
 .hide{
   visibility: hidden;
 }
+@media screen and (min-width: 20rem){
+  body{
+    margin: 1% 1rem;
+  }
+}
+@media screen and (min-width: 50rem){
+  body{
+    margin:1% 10%;
+  }
+}

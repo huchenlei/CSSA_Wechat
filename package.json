@@ -22,6 +22,7 @@
     "request": "^2.81.0",
     "request-promise-any": "^1.0.4",
     "serve-favicon": "~2.4.2",
-    "wechat": "~1.0.0"
+    "wechat": "~1.0.0",
+    "ws": "^3.1.0"
   }
 }
