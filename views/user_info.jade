@@ -22,14 +22,8 @@ block content
                 +input-field(field[0], user[field[0]],field[1])
             +input-field("discipline",user.discipline,"text","disciplines")
             datalist#disciplines
-                option ECE
-                option EngSci
-                option Chem
-                option Civ
-                option Mech
-                option Indy
-                option Material
-                option Mining
-            input#open-id(type="hidden" value="#{openId}")
-            button.weui-btn.weui-btn_primary(type='submit') Save
+                for discipline in disciplines
+                    option=discipline
+            input#open-id(type="hidden" name="openId" value="#{openId}")
+            button.weui-btn.weui-btn_primary(type='submit') Submit
     script(src="/javascripts/user_info.js")

@@ -9,3 +9,6 @@ CSSA official account wechat backend system.
 - Online article editing page
 - Online auto-reply rule managing page
 - Testing
+- prepopulate disciplines
+
+[x] AJAX user info, add new discipline

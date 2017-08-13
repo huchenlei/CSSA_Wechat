@@ -9,9 +9,10 @@ const dbAction = require('../utils/db_action');
 require('any-promise/register/q');
 const request = require('request-promise-any');
 const _ = require('lodash');
-const bodyParser = require('body-parser');
-router.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
-router.use(bodyParser.json());
+// const bodyParser = require('body-parser');
+// router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+// router.use(bodyParser.json());
+const parseMultipart = require('multer')().array()//need to use multer to parse ajax form data
 
 /**
  * User scan QR code convert the qr code to a code copy page
@@ -26,9 +27,9 @@ router.get('/convert/qrcode', function (req, res) {
  * RESTful API for user actions
  */
 router.route('/')
-/**
- * @Deprecated The un-certified wechat official account cannot use oauth interface
- */
+    /**
+     * @Deprecated The un-certified wechat official account cannot use oauth interface
+     */
     .get(function (req, res) {
         const code = req.query['code'];
         const options = {
@@ -82,18 +83,36 @@ router.route('/:openId')
 /**
  * Test path for dev only
  */
-router.get('/test/:openId', (req, res) => {
-    res.locals.user = {
-        name: "Rain",
-        graduation: "2017-05-31",
-        discipline: "EngSci",
-        email: "ggg@ttt.com",
-        phone: "666-999-4444"
-    };
-    res.locals.title = "Member Info";
-    res.locals.openId = req.params.openId;
-    res.render('user_info.jade');
-});
+router
+    .get("/test/ing", async (req, res) => {
+        console.log(req.params, 'params')
+        res.locals.user = {
+            name: "Rain",
+            graduation: "2017-05-31",
+            discipline: "EngSci",
+            email: "ggg@ttt.com",
+            phone: "666-999-4444"
+        };
+        res.locals.title = "Member Info";
+        res.locals.openId = req.params.openId;
+        // res.locals.disciplines = await dbAction.getDisciplines()
+        res.locals.disciplines = ["ECE", "EngSci", "Chem", "Civ", "Mech", "Indy", "Material", "Mining",]//after db is prepopulated this can be removed
+        console.log('disciplines', await dbAction.getDisciplines())
+        res.render('user_info.jade');
+    })
+    .put("/test/ing", parseMultipart, async (req, res) => {
+        console.log('requestbody', req.body)
+        const { name, graduation, email, phone, discipline, openId } = req.body
+        // const disciplines = await dbAction.getDisciplines()
+        const disciplines = ["ECE", "EngSci", "Chem", "Civ", "Mech", "Indy", "Material", "Mining",]//after db is prepopulated this can be removed
+        // TODO: fix promise reject issue
+        // if (!disciplines.includes(discipline)) {
+        //     await dbAction.addDiscipline(discipline)
+        // }
+        // await dbAction.updateMemberInfo(openId, { name, graduation, email, phone, discipline })
+        res.json({ type: "success" });
+        // res.json({ type: "error" });
+    })
 
 
 /**
