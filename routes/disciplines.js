@@ -12,22 +12,22 @@ router.use(bodyParser.urlencoded({extended: true})); // for parsing application/
 router.use(bodyParser.json());
 
 router.route('/')
-    .get((req, res) => {
+    .get((req, res, next) => {
         dbAction.getDisciplines().then((dbResult) => {
             let jsonResult = [];
             dbResult.forEach((item) => {
                 jsonResult.push(_.pick(item, ['name']));
             });
             res.json(jsonResult);
-        })
+        }).catch(next);
     })
-    .post((req, res) => {
+    .post((req, res, next) => {
         console.log(req.body.name);
         dbAction.addDiscipline(req.body.name).then((dbResult) => {
             res.json({
                 status: 0
             });
-        })
+        }).catch(next);
     });
 
 module.exports = router;

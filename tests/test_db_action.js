@@ -123,4 +123,4 @@ describe('mergeDisciplines', function () {
     });
 });
 
-module.export = {registeredOpenId, unregisteredOpenId};
+module.exports = {registeredOpenId, unregisteredOpenId};

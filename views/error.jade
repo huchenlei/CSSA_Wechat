@@ -1,6 +1,9 @@
 extends layout
 
 block content
+  center
+    img#error-icon(src="/images/error.png")
   h1= message
   h2= error.status
-  pre #{error.stack}
+  - var details = error.stack || error;
+  pre #{details}

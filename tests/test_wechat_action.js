@@ -1,5 +1,8 @@
 /**
  * Created by Charlie on 2017-08-04.
+ *
+ * Due to wechat official account IP whitelist, the tests in this module could only pass
+ * on the server
  */
 
 // const wechatAction = require('./../utils/wechat_action');

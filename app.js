@@ -37,7 +37,7 @@ app.use(function (req, res, next) {
 
 // Handle Ajax request errors
 app.use(function (err, req, res, next) {
-  if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+  if (req.xhr) {
     res.json({
       'status': -1,
       'error': err
@@ -50,12 +50,16 @@ app.use(function (err, req, res, next) {
 // default error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
+  res.locals.message = err.message || 'Opps! Something wrong';
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  console.log(err);
+  console.log(res.locals.error);
 
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+  next();
 });
 
 module.exports = app;
