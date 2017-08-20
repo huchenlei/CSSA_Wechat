@@ -17,11 +17,11 @@ router.route('/')
     })
 
 wss.on('connection', function (ws, req) {
-    // if (!connected) connected = true
-    // else {
-    //     ws.send('only one connection allowed')
-    //     return
-    // }
+    if (!connected) connected = true
+    else {
+        ws.close(1013, 'only one connection allowed')
+        return
+    }
     console.log('ws connected, ip: ', req.connection.remoteAddress)
     ws.on('message', async message => {
         console.log('received:', message)
@@ -63,6 +63,7 @@ wss.on('connection', function (ws, req) {
     })
     ws.on('close', () => {
         console.log('disconnected', req.connection.remoteAddress)
+        connected = false
     })
     ws.send(JSON.stringify({
         type: "connected to ws"

@@ -2,7 +2,9 @@ const ws = new WebSocket("ws://" + window.location.hostname + ":8080")
 const add = _$('.global-actions > .add')
 const merge = _$('.global-actions > .merge')
 const refresh = _$('.global-actions > .refresh')
+const msgQ = []
 ws.onopen = () => {
+    msgQ.waiting = false
     sendMessage('getDisciplines')
 }
 ws.onmessage = ({ data }) => {
@@ -14,11 +16,41 @@ ws.onmessage = ({ data }) => {
             loadDisciplines(dataObj.response)
             break;
     }
+    // everytime got a response, dequeue
+    msgQ.clearOne()
+}
+
+ws.onclose = ev => {
+    console.log(ev)
+    msgQ.waiting = true
+    alert(ev.reason || 'Conection Error')
 }
 
 function sendMessage(type, data) {
-    ws.send(JSON.stringify({ type, data }))
+    msgQ.maybeSend(JSON.stringify({ type, data }))
 }
+
+Object.assign(msgQ, {
+    waiting: false,
+    maybeSend(message) {
+        if (!this.waiting) {
+            ws.send(message)
+            this.waiting = true
+        }
+        else {
+            this.push(message)
+            if (msgQ.length > 3) {
+                console.log('network slow, pending operations:\n', msgQ.join('\n'))
+            }
+        }
+    },
+    clearOne() {
+        this.shift();
+        this.waiting = false
+        if (this.length > 0)
+            this.maybeSend(this[0])
+    }
+})
 
 function loadDisciplines(disciplines) {
     const divDisciplines = new Disciplines(disciplines)
