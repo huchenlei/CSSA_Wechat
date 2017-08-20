@@ -28,19 +28,33 @@ wss.on('connection', function (ws, req) {
         const msgData = JSON.parse(message)
         const data = msgData.data
         let response;
-        switch (msgData.type) {
-            case "getDisciplines":
-                response = (await dbAction.getDisciplines()).map(({ name }) => name)
-                break;
-            case "addDiscipline":
-                dbAction.addDiscipline(data)
-                break;
-            case "editDiscipline":
-                console.log('update discipline from', data.from, 'to', data.to)
-                break;
-            case "removeDiscipline":
-                console.log('remove discipline', data)
-                break;
+        try {
+            switch (msgData.type) {
+                case "getDisciplines":
+                    response = (await dbAction.getDisciplines()).map(({ name }) => name)
+                    break;
+                case "addDiscipline":
+                    await dbAction.addDiscipline(data)
+                    response = "success"
+                    break;
+                case "editDiscipline":
+                    console.log('update discipline from', data.from, 'to', data.to)
+                    await dbAction.editDiscipline(data.from, data.to)
+                    response = "TB checked"
+                    break;
+                case "removeDiscipline":
+                    console.log('removing', data)
+                    await dbAction.removeDiscipline(data)
+                    response = "success"
+                    break;
+                case "mergeDisciplines":
+                    await dbAction.mergeDisciplines(data.to, data.from)
+                    response = "success"
+                    break;
+            }
+        } catch (e) {
+            console.error(e)
+            response = e
         }
         ws.send(JSON.stringify({
             type: msgData.type,

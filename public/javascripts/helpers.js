@@ -17,7 +17,7 @@ class Component extends Object {
         this.listeners = new Map()
     }
     listen(eventName) {
-        // called by the parent to listen to its event
+        // called by the parent to listen to this instance's event
         return new Promise((accept, reject) => {
             try {
                 if (this.listeners.has(eventName)) {
@@ -35,7 +35,7 @@ class Component extends Object {
         this.listeners.get(eventName).forEach(callback => callback(value))
     }
     refresh() {
-        // all emits will be refreshed, all parent listeners stays
+        // all parent listeners stays intact, all child's will be refreshed
         let child;
         while (child = this.dom.lastElementChild) {
             this.dom.removeChild(child)

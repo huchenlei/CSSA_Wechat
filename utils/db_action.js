@@ -187,11 +187,25 @@ async function mergeDisciplines(targetDis, dList) {
     for (const discipline of dList) {
         assert(typeof discipline === 'string');
         // remove duplications in Discipline collection
+        console.log('merging', discipline)
         if (discipline !== targetDis)
             await Discipline.remove({ name: discipline }).exec();
         // update the discipline field in user schema
         await User.updateMany({ 'detailedInfo.discipline': discipline }, { $set: { 'detailedInfo.discipline': targetDis } });
     }
+}
+
+async function editDiscipline(oldname, newname) {
+    // TODO: this does not work
+    if (typeof (oldname) !== "string" || typeof (newname) !== "string") throw new Error('Discipline name must be a string')
+    await Discipline.updateOne({ name: oldname }, { $set: { name: newname } })
+    await User.updateMany({ 'detailedInfo.discipline': oldname }, { $set: { 'detailedInfo.discipline': newname } });
+}
+
+async function removeDiscipline(name) {
+    if (typeof (name) !== "string") throw new Error('Discipline name must be a string')
+    await Discipline.remove({ name }).exec();
+    await User.updateMany({ 'detailedInfo.discipline': name }, { $set: { 'detailedInfo.discipline': "(discontinued)" + name } });
 }
 
 module.exports = {
@@ -205,5 +219,7 @@ module.exports = {
     addDiscipline,
     getDisciplines,
     mergeDisciplines,
+    editDiscipline,
+    removeDiscipline,
     USER_INFO_FIELDS
 };

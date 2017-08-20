@@ -23,6 +23,7 @@ function sendMessage(type, data) {
 function loadDisciplines(disciplines) {
     const divDisciplines = new Disciplines(disciplines)
     _$('.discplines-wrapper').appendChild(divDisciplines.render())
+    // event listeners to higher level discipline edits
     add.onclick = ev => {
         const discipline = prompt('Add a discipline', "")
         if (discipline && discipline !== "") {
@@ -39,10 +40,12 @@ function loadDisciplines(disciplines) {
         }
         const discipline = prompt('Merge into what?', selected.join('+'))
         // will use a datalist to give options to the existing names
-        if (discipline && discipline !== "") {
+        if (discipline && discipline !== "" && selected.includes(discipline)) {
             console.log('new discipline', discipline)
             divDisciplines.merge(discipline)
             // the job of checking repetition will be on the server
+        } else {
+            alert('The discipline name must be one of the merged disciplines')
         }
     }
     refresh.onclick = ev => {
@@ -51,28 +54,22 @@ function loadDisciplines(disciplines) {
     }
 }
 
+// renders all disciplines
 class Disciplines extends Component {
     constructor(list) {
         super('div', { className: "disciplines" })
         this.data = new Set(list)
         this.selected = new Set()
     }
-    add(dis) {
-        if (this.data.has(dis)) return false
-        // add a discipline
-        this.data.add(dis)
-        this.dom.appendChild(this.createDis(dis, this.data.length).dom)
-        sendMessage('addDiscipline', dis)
-        return true
-    }
-    createDis(dis, i) {
+    createDis(dis) {
+        // instantiate a discipline item and attach relevant listeners
         const Disp = new Discipline(dis)
         Disp.listen('edit').then(newDis => {
             this.data.delete(dis)
             this.data.add(newDis)
             console.log(dis, '-->', newDis)
         })
-        Disp.listen('remove').then(child => {
+        Disp.listen('remove').then(() => {
             this.data.delete(dis)
         })
         Disp.listen('select').then(isChecked => {
@@ -85,6 +82,15 @@ class Disciplines extends Component {
         })
         Disp.render()
         return Disp
+    }
+    // add a discipline
+    add(dis) {
+        if (this.data.has(dis)) return false
+        // add a discipline
+        this.data.add(dis)
+        this.dom.appendChild(this.createDis(dis, this.data.length).dom)
+        sendMessage('addDiscipline', dis)
+        return true
     }
     merge(newName) {
         // merge all selected items to a new name
@@ -110,7 +116,7 @@ class Discipline extends Component {
         this.discipline = dis
     }
     edit(p) {
-        // turn on edit mode
+        // edit a single discipline
         p.setAttribute('contenteditable', '')
         p.focus()
         p.onblur = ev => this.submitEdit(p)
@@ -122,6 +128,7 @@ class Discipline extends Component {
         }
     }
     submitEdit(p) {
+        // set to null to prevent duplicates of the same edit
         p.onblur = null
         p.onkeydown = null
         p.removeAttribute('contenteditable')
@@ -130,12 +137,11 @@ class Discipline extends Component {
         sendMessage('editDiscipline', { from: this.discipline, to: p.textContent })
     }
     remove() {
-        this.emit('remove', this.dom)
+        this.emit('remove')//let parent update its data list
         sendMessage('removeDiscipline', this.discipline)
         this.destroy()
     }
     check(isChecked) {
-        console.log('checked', isChecked)
         this.emit('select', isChecked)
     }
     render() {

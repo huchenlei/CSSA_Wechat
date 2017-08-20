@@ -16,4 +16,5 @@ CSSA official account wechat backend system.
 [x] Member info page, first load skeleton, then request discipline info
 [x] Use openId in the url
 [x] Management edit disciplines frontend
+[ ] Check if websocket still alive
 [ ] Backend edit disciplines
