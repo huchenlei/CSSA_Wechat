@@ -26,13 +26,20 @@ wss.on('connection', function (ws, req) {
     ws.on('message', async message => {
         console.log('received:', message)
         const msgData = JSON.parse(message)
+        const data = msgData.data
         let response;
         switch (msgData.type) {
             case "getDisciplines":
                 response = (await dbAction.getDisciplines()).map(({ name }) => name)
                 break;
             case "addDiscipline":
-                dbAction.addDiscipline(msgData.data)
+                dbAction.addDiscipline(data)
+                break;
+            case "editDiscipline":
+                console.log('update discipline from', data.from, 'to', data.to)
+                break;
+            case "removeDiscipline":
+                console.log('remove discipline', data)
                 break;
         }
         ws.send(JSON.stringify({

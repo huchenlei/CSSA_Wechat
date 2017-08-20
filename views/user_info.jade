@@ -13,17 +13,16 @@ block content
     meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui")
     link(rel="stylesheet", href="/stylesheets/weui.css")
     link(rel="stylesheet" href="/stylesheets/user_info.css")
+    script(src="/javascripts/helpers.js")
     .container
         h1.center_text Member Info
-        form(method='POST' action='/user/update_info')
+        form(method='POST' action='#')
             .input-container
             - var fields = [["name","text"],["graduation","date"],["email","email"],["phone","tel"]];
             for field in fields
                 +input-field(field[0], user[field[0]],field[1])
             +input-field("discipline",user.discipline,"text","disciplines")
             datalist#disciplines
-                for discipline in disciplines
-                    option=discipline.name
             input#open-id(type="hidden" name="openId" value="#{openId}")
             button.weui-btn.weui-btn_primary(type='submit') Submit
     script(src="/javascripts/user_info.js")

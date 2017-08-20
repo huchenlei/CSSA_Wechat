@@ -21,5 +21,15 @@
             xhr.onerror = reject
         })
     }
-    Object.assign(this, { put, post })
+    function get(url) {
+        xhr.open('GET', url)
+        return new Promise((accept, reject) => {
+            xhr.send()
+            xhr.onload = () => {
+                accept(xhr.response)
+            }
+            xhr.onerror = reject
+        })
+    }
+    Object.assign(this, { put, post, get })
 })(window)

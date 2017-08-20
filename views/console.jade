@@ -4,14 +4,15 @@ block content
   meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui")
   link(rel="stylesheet", href="/stylesheets/weui.css")
   link(rel="stylesheet", href="/stylesheets/console.css")
+  script(src="/javascripts/helpers.js")
+
   h1 CSSA WeChat Console
   //- discipline: read, add, delete, merge, modify
   //- user: name, card, info, search
-  div.weui-cells
+  div.weui-cells.discplines-wrapper
     h2 Disciplines
     .global-actions
       button.merge.weui-btn.weui-btn_primary ><
       button.add.weui-btn.weui-btn_primary +
       button.refresh.weui-btn.weui-btn_primary ↻
-    .disciplines
   script(src="/javascripts/console.js")

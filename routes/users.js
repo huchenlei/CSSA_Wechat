@@ -13,7 +13,7 @@ const _ = require('lodash');
 // router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 // router.use(bodyParser.json());
 const parseMultipart = require('multer')().array()//need to use multer to parse ajax form data
-
+dbAction.initializeDB()
 /**
  * User scan QR code convert the qr code to a code copy page
  */
@@ -27,9 +27,9 @@ router.get('/convert/qrcode', function (req, res) {
  * RESTful API for user actions
  */
 router.route('/')
-/**
- * @Deprecated The un-certified wechat official account cannot use oauth interface
- */
+    /**
+     * @Deprecated The un-certified wechat official account cannot use oauth interface
+     */
     .get(function (req, res, next) {
         const code = req.query['code'];
         const options = {
@@ -84,7 +84,7 @@ router.route('/:openId')
  * Test path for dev only
  */
 router
-    .get("/test/ing", async(req, res) => {
+    .get("/test/:openId", async (req, res) => {
         // console.log(req.params, 'params')
         res.locals.user = {
             name: "Rain",
@@ -94,25 +94,26 @@ router
             phone: "666-999-4444"
         };
         res.locals.title = "Member Info";
-        res.locals.openId = req.params.openId;
+        res.locals.openId = 12345;
+        await dbAction.bindUser(12345, "Rain")
         res.locals.disciplines = await dbAction.getDisciplines()
         // console.log('disciplines', res.locals.disciplines)
         res.render('user_info.jade');
     })
-    .put("/test/ing", parseMultipart, async(req, res) => {
+    .put("/test/:openId", parseMultipart, async (req, res) => {
         console.log('requestbody', req.body)
-        const {name, graduation, email, phone, discipline, openId} = req.body
-        const disciplines = (await dbAction.getDisciplines()).map(({name}) => name)
+        const { name, graduation, email, phone, discipline, openId } = req.body
+        const disciplines = (await dbAction.getDisciplines()).map(({ name }) => name)
         console.log(disciplines)
         try {
             if (!disciplines.includes(discipline)) {
                 await dbAction.addDiscipline(discipline)
             }
-            await dbAction.updateMemberInfo(openId, {name, graduation, email, phone, discipline})
-            res.json({type: "success"});
+            await dbAction.updateMemberInfo(openId, { name, graduation: graduation.slice(0, 4), email, phone, discipline })
+            res.json({ type: "success" });
         }
         catch (err) {
-            res.json({type: "error", message: err});
+            res.json({ type: "error", message: err });
         }
     })
 

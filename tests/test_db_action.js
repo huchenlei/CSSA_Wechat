@@ -8,7 +8,9 @@ const fs = require('fs');
 const expect = require('chai').expect;
 const should = require('chai').use(require('chai-as-promised')).should();
 
-const cardPool = JSON.parse(fs.readFileSync('./data/card-pool-private.json'));
+// const cardPool = JSON.parse(fs.readFileSync('./data/card-pool-private.json'));
+const cardPool = JSON.parse(fs.readFileSync('./data/card-pool-public.json'));
+
 const registeredOpenId = "12345";
 const unregisteredOpenId = "54321";
 
@@ -101,7 +103,7 @@ describe('mergeDisciplines', function () {
             const openId = `openId${i}`;
             await dbAction.addDiscipline(testDisciplines[i]);
             await dbAction.bindUser(openId, cardPool[i + 1]);
-            await dbAction.updateMemberInfo(openId, {discipline: testDisciplines[i]});
+            await dbAction.updateMemberInfo(openId, { discipline: testDisciplines[i] });
         }
         await dbAction.mergeDisciplines(mergeTarget, testDisciplines);
         // User list should be updated
@@ -114,7 +116,7 @@ describe('mergeDisciplines', function () {
         const result = await dbAction.getDisciplines();
         testDisciplines.forEach((discipline) => {
             let disFind = result.find(d => d.name === discipline);
-            if(discipline === mergeTarget) {
+            if (discipline === mergeTarget) {
                 expect(disFind).not.to.be.undefined;
             } else {
                 expect(disFind).to.be.undefined;
@@ -123,4 +125,4 @@ describe('mergeDisciplines', function () {
     });
 });
 
-module.exports = {registeredOpenId, unregisteredOpenId};
+module.exports = { registeredOpenId, unregisteredOpenId };

@@ -6,7 +6,10 @@ h1{
     text-align: center;
 }
 .discipline>i{
-    padding: 0 0.5rem;
+    width: 1.5rem;
+    margin: 0 0.5rem;
+    text-align: center;    
+    border-radius: 100%;
 }
 .global-actions{
     display: flex;
@@ -16,4 +19,21 @@ h1{
 }
 .weui-btn:first-child,.weui-btn:last-child{
     margin: 1rem 0;
+}
+@media screen and (min-width:40rem){
+    .disciplines{
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        max-height: 20rem;
+    }
+}
+.weui-btn:hover{
+    cursor: pointer;
+}
+
+.discipline>i:hover{
+    transition:all 0.3s ease;
+    cursor: pointer;    
+    box-shadow: 0 0 1rem 0 rgba(0,0,0,0.62);
 }
