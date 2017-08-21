@@ -68,7 +68,6 @@ function addAvailableCards(jsonPath) {
  * @return Promise
  */
 function initializeDB() {
-    console.log('initialize DB')
     const disciplines = ["ECE", "EngSci", "Chem", "Civ", "Mech", "Indy", "Material", "Mining"];
     return Promise.all([
         User.remove().exec() // clean users collection
@@ -137,7 +136,6 @@ async function updateMemberInfo(openId, newInfo) {
     Object.keys(newInfo).map((key) => {
         update[`detailedInfo.${key}`] = newInfo[key];
     });
-    console.log('update', update)
     result['data'] = await User.updateOne({ openId: openId }, { $set: update });
     return result;
 }
@@ -187,7 +185,6 @@ async function mergeDisciplines(targetDis, dList) {
     for (const discipline of dList) {
         assert(typeof discipline === 'string');
         // remove duplications in Discipline collection
-        console.log('merging', discipline)
         if (discipline !== targetDis)
             await Discipline.remove({ name: discipline }).exec();
         // update the discipline field in user schema
@@ -195,6 +192,12 @@ async function mergeDisciplines(targetDis, dList) {
     }
 }
 
+/**
+ * To be removed
+ * @Deprecated Use mergeDisciplines instead
+ * @param oldname
+ * @param newname
+ */
 async function editDiscipline(oldname, newname) {
     // TODO: this does not work
     if (typeof (oldname) !== "string" || typeof (newname) !== "string") throw new Error('Discipline name must be a string')
@@ -202,6 +205,11 @@ async function editDiscipline(oldname, newname) {
     await User.updateMany({ 'detailedInfo.discipline': oldname }, { $set: { 'detailedInfo.discipline': newname } });
 }
 
+/**
+ * To be removed
+ * @Deprecated Not recommend, since calling it will lose user info
+ * @param name
+ */
 async function removeDiscipline(name) {
     if (typeof (name) !== "string") throw new Error('Discipline name must be a string')
     await Discipline.remove({ name }).exec();
@@ -219,7 +227,7 @@ module.exports = {
     addDiscipline,
     getDisciplines,
     mergeDisciplines,
-    editDiscipline,
-    removeDiscipline,
+    editDiscipline, // @Deprecated
+    removeDiscipline, // @Deprecated
     USER_INFO_FIELDS
 };

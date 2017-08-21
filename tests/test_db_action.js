@@ -8,8 +8,7 @@ const fs = require('fs');
 const expect = require('chai').expect;
 const should = require('chai').use(require('chai-as-promised')).should();
 
-// const cardPool = JSON.parse(fs.readFileSync('./data/card-pool-private.json'));
-const cardPool = JSON.parse(fs.readFileSync('./data/card-pool-public.json'));
+const cardPool = JSON.parse(fs.readFileSync('./data/card-pool-private.json'));
 
 const registeredOpenId = "12345";
 const unregisteredOpenId = "54321";

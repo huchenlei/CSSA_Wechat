@@ -12,8 +12,8 @@ const _ = require('lodash');
 // const bodyParser = require('body-parser');
 // router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 // router.use(bodyParser.json());
-const parseMultipart = require('multer')().array()//need to use multer to parse ajax form data
-dbAction.initializeDB()
+const parseMultipart = require('multer')().array(); //need to use multer to parse ajax form data
+
 /**
  * User scan QR code convert the qr code to a code copy page
  */
@@ -73,7 +73,6 @@ router.route('/:openId')
         const newInfo = _.pick(req.body, dbAction.USER_INFO_FIELDS);
         dbAction.updateMemberInfo(req.params.openId, newInfo)
             .then((dbResult) => {
-                console.log(dbResult.msg + ' - ' + dbResult.data);
                 res.json({
                     status: 0
                 });
@@ -82,6 +81,7 @@ router.route('/:openId')
 
 /**
  * Test path for dev only
+ * @Deprecated: Shall no longer use this path
  */
 router
     .get("/test/:openId", async (req, res) => {
