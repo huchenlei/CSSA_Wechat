@@ -12,7 +12,7 @@ const _ = require('lodash');
 // const bodyParser = require('body-parser');
 // router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 // router.use(bodyParser.json());
-const parseMultipart = require('multer')().array(); //need to use multer to parse ajax form data
+const parseMultipart = require('multer')().array()//need to use multer to parse ajax form data
 
 /**
  * User scan QR code convert the qr code to a code copy page
@@ -27,9 +27,9 @@ router.get('/convert/qrcode', function (req, res) {
  * RESTful API for user actions
  */
 router.route('/')
-    /**
-     * @Deprecated The un-certified wechat official account cannot use oauth interface
-     */
+/**
+ * @Deprecated The un-certified wechat official account cannot use oauth interface
+ */
     .get(function (req, res, next) {
         const code = req.query['code'];
         const options = {
@@ -69,7 +69,8 @@ router.route('/:openId')
                 }
             }).catch(next);
     })
-    .put(function (req, res, next) {
+    .put(parseMultipart, function (req, res, next) {
+        console.log(req.body);
         const newInfo = _.pick(req.body, dbAction.USER_INFO_FIELDS);
         dbAction.updateMemberInfo(req.params.openId, newInfo)
             .then((dbResult) => {
@@ -78,53 +79,5 @@ router.route('/:openId')
                 });
             }).catch(next);
     });
-
-/**
- * Test path for dev only
- * @Deprecated: Shall no longer use this path
- */
-router
-    .get("/test/:openId", async (req, res) => {
-        // console.log(req.params, 'params')
-        res.locals.user = {
-            name: "Rain",
-            graduation: "2017-05-31",
-            discipline: "EngSci",
-            email: "ggg@ttt.com",
-            phone: "666-999-4444"
-        };
-        res.locals.title = "Member Info";
-        res.locals.openId = 12345;
-        await dbAction.bindUser(12345, "Rain")
-        res.locals.disciplines = await dbAction.getDisciplines()
-        // console.log('disciplines', res.locals.disciplines)
-        res.render('user_info.jade');
-    })
-    .put("/test/:openId", parseMultipart, async (req, res) => {
-        console.log('requestbody', req.body)
-        const { name, graduation, email, phone, discipline, openId } = req.body
-        const disciplines = (await dbAction.getDisciplines()).map(({ name }) => name)
-        console.log(disciplines)
-        try {
-            if (!disciplines.includes(discipline)) {
-                await dbAction.addDiscipline(discipline)
-            }
-            await dbAction.updateMemberInfo(openId, { name, graduation: graduation.slice(0, 4), email, phone, discipline })
-            res.json({ type: "success" });
-        }
-        catch (err) {
-            res.json({ type: "error", message: err });
-        }
-    })
-
-
-/**
- * The path is deprecated, should use RESTful PUT /user/<openId> instead
- * @Deprecated
- */
-router.post('/update_info', (req, res) => {
-    console.log(req.body);
-    res.json(req.body);
-});
 
 module.exports = router;

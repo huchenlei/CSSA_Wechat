@@ -88,7 +88,7 @@ router.post('/', wechat(config, function (req, res, next) {
                 replyMessage("Sorry, the QR code is invalid.");
                 return;
             }
-            console.log(`serial is ${serial}`);
+            // console.log(`serial is ${serial}`); // Debugging
             message = `bind ${serial}`;
         } else if (data.Event === 'VIEW') { // click on member info(OAUTH version)
             return; // User will be redirect to info page; do nothing here
@@ -108,10 +108,10 @@ router.post('/', wechat(config, function (req, res, next) {
                         replyMessage(dbResult.msg);
                     }
                 });
-                return;
             } else { // click on other menu options
                 // Send corresponding articles
             }
+            return;
         }
     } else {
         message = data.Content;
