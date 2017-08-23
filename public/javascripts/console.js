@@ -87,6 +87,7 @@ class Disciplines extends Component {
         Disp.listen('remove').then(() => {
             this.data.delete(dis)
         })
+        // The whole HTMLElement of the discipline is passed here and store into/remove from this.selected
         Disp.listen('select').then(({ isChecked, element }) => {
             console.log('select', dis, this.selected)
             if (isChecked) {
@@ -107,24 +108,26 @@ class Disciplines extends Component {
         sendMessage('addDiscipline', dis)
         return true
     }
-    // Merge all selected discipline to the first selected discipline, and trigger edit inside divDisciplines.merge()
+    // Merge all selected discipline to the first selected discipline, and trigger edit on the element corresponding to targetDis
     merge() {
         const dList = []
         // use the first element as the targetDis
         const targetDis = _$('p', Array.from(this.selected)[0]).textContent
         this.selected.forEach((element) => {
-            const dis = _$('p', element).textContent
+            const dis = _$('p', element).textContent //The name of the discipline to be merged
             dList.push(dis)
             if (dis !== targetDis) {
                 this.data.delete(dis)
-                element.classList.add("fading")
+                element.classList.add("fading")//animation to fade the removed discipline away
             }
         })
         sendMessage('mergeDisciplines', { from: dList, to: targetDis })
+        // clear the selected disciplines list
         this.selected.clear()
         setTimeout(() => {
+            // after 700ms, the fading animation is done, we can remove the elements corresponding to each of dList by calling this.refresh()
             this.refresh()
-            // trigger edit after refresh
+            // trigger edit after refresh by clicking on the modify icon
             const index = Array.from(this.data).indexOf(targetDis)
             _$(`.discipline:nth-child(${index + 1}) i.modify`, this.dom).click()
         }, 700)
