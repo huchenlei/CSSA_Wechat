@@ -1,4 +1,6 @@
 const _$ = (selector, container = document) => container.querySelector(selector)
+
+// Create a new HTMLElement, a syntax sugar for document.createElement
 function new$(tag, props, attrs) {
     const element = document.createElement(tag)
     if (props) Object.assign(element, props)
@@ -10,14 +12,17 @@ function new$(tag, props, attrs) {
     return element
 }
 
+// A minimal Web component with Vue-like data binding
 class Component extends Object {
+    // upon instantiation, create the root html element as this.dom
     constructor(...args) {
         super();
         this.dom = new$(...args)
+        // the listeners will get populated when other code calls the listen() method
         this.listeners = new Map()
     }
+    // register an eventListener for this component, event body is passed through a Promise
     listen(eventName) {
-        // called by the parent to listen to this instance's event
         return new Promise((accept, reject) => {
             try {
                 if (this.listeners.has(eventName)) {
@@ -30,12 +35,12 @@ class Component extends Object {
             }
         })
     }
+    // emit an event, trigger all registered functions in this.listeners of the emitted event
     emit(eventName, value) {
-        // called by the instance to notify its parent
         this.listeners.get(eventName).forEach(callback => callback(value))
     }
+    // recreate all the children
     refresh() {
-        // all parent listeners stays intact, all child's will be refreshed
         let child;
         while (child = this.dom.lastElementChild) {
             this.dom.removeChild(child)
@@ -48,11 +53,12 @@ class Component extends Object {
         this.listeners = null
         this.dom = null
     }
+    // to be overwritten, default return the dom element itself
     render() {
-        // to be overwritten, default return the dom element itself
         return this.dom
     }
 }
+
 // a XHR wrap for ajax requests
 (function ajax() {
     const xhr = new XMLHttpRequest()
