@@ -70,15 +70,7 @@ function loadDisciplines(disciplines) {
             alert('no disciplines selected')
             return
         }
-        const discipline = prompt('Merge into what?', selected.join('+'))
-        // will use a datalist to give options to the existing names
-        if (discipline && discipline !== "" && selected.includes(discipline)) {
-            console.log('new discipline', discipline)
-            divDisciplines.merge(discipline)
-            // the job of checking repetition will be on the server
-        } else {
-            alert('The discipline name must be one of the merged disciplines')
-        }
+        divDisciplines.merge()
     }
     refresh.onclick = ev => {
         divDisciplines.destroy()
@@ -100,16 +92,17 @@ class Disciplines extends Component {
             this.data.delete(dis)
             this.data.add(newDis)
             console.log(dis, '-->', newDis)
+            // this.refresh()
         })
         Disp.listen('remove').then(() => {
             this.data.delete(dis)
         })
-        Disp.listen('select').then(isChecked => {
+        Disp.listen('select').then(({ isChecked, element }) => {
             console.log('select', dis, this.selected)
             if (isChecked) {
-                this.selected.add(dis)
+                this.selected.add(element)
             } else {
-                this.selected.delete(dis)
+                this.selected.delete(element)
             }
         })
         Disp.render()
@@ -124,15 +117,27 @@ class Disciplines extends Component {
         sendMessage('addDiscipline', dis)
         return true
     }
-    merge(newName) {
-        // merge all selected items to a new name
-        this.selected.forEach(dis => {
-            this.data.delete(dis)
+    // Merge all selected discipline to the first selected discipline, and trigger edit inside divDisciplines.merge()
+    merge() {
+        const dList = []
+        // use the first element as the targetDis
+        const targetDis = _$('p', Array.from(this.selected)[0]).textContent
+        this.selected.forEach((element) => {
+            const dis = _$('p', element).textContent
+            dList.push(dis)
+            if (dis !== targetDis) {
+                this.data.delete(dis)
+                element.classList.add("fading")
+            }
         })
-        this.data.add(newName)
-        sendMessage('mergeDisciplines', { from: Array.from(this.selected), to: newName })
+        sendMessage('mergeDisciplines', { from: dList, to: targetDis })
         this.selected.clear()
-        this.refresh()
+        setTimeout(() => {
+            this.refresh()
+            // trigger edit after refresh
+            const index = Array.from(this.data).indexOf(targetDis)
+            _$(`.discipline:nth-child(${index + 1}) i.modify`, this.dom).click()
+        }, 700)
     }
     render() {
         this.data.forEach(dis => {
@@ -164,17 +169,19 @@ class Discipline extends Component {
         p.onblur = null
         p.onkeydown = null
         p.removeAttribute('contenteditable')
-        this.discipline = p.textContent
         this.emit('edit', p.textContent)
         sendMessage('editDiscipline', { from: this.discipline, to: p.textContent })
+        this.discipline = p.textContent
     }
-    remove() {
-        this.emit('remove')//let parent update its data list
-        sendMessage('removeDiscipline', this.discipline)
-        this.destroy()
-    }
+    // remove() {
+    //     this.emit('remove')//let parent update its data list
+    //     sendMessage('removeDiscipline', this.discipline)
+    //     this.destroy()
+    // }
+
+    // event listener when checkbox gets clicked
     check(isChecked) {
-        this.emit('select', isChecked)
+        this.emit('select', { isChecked, element: this.dom })
     }
     render() {
         const wrapper = this.dom
@@ -190,10 +197,10 @@ class Discipline extends Component {
         modify.onclick = ev => {
             this.edit(p)
         }
-        const remove = wrapper.appendChild(new$('i', { className: "delete", textContent: "✖" }))
-        remove.onclick = ev => {
-            this.remove()
-        }
+        // const remove = wrapper.appendChild(new$('i', { className: "delete", textContent: "✖" }))
+        // remove.onclick = ev => {
+        //     this.remove()
+        // }
         return wrapper
     }
 }

@@ -192,30 +192,6 @@ async function mergeDisciplines(targetDis, dList) {
     }
 }
 
-/**
- * To be removed
- * @Deprecated Use mergeDisciplines instead
- * @param oldname
- * @param newname
- */
-async function editDiscipline(oldname, newname) {
-    // TODO: this does not work
-    if (typeof (oldname) !== "string" || typeof (newname) !== "string") throw new Error('Discipline name must be a string')
-    await Discipline.updateOne({ name: oldname }, { $set: { name: newname } })
-    await User.updateMany({ 'detailedInfo.discipline': oldname }, { $set: { 'detailedInfo.discipline': newname } });
-}
-
-/**
- * To be removed
- * @Deprecated Not recommend, since calling it will lose user info
- * @param name
- */
-async function removeDiscipline(name) {
-    if (typeof (name) !== "string") throw new Error('Discipline name must be a string')
-    await Discipline.remove({ name }).exec();
-    await User.updateMany({ 'detailedInfo.discipline': name }, { $set: { 'detailedInfo.discipline': "(discontinued)" + name } });
-}
-
 module.exports = {
     addAvailableCards,
     initializeDB,
@@ -227,7 +203,5 @@ module.exports = {
     addDiscipline,
     getDisciplines,
     mergeDisciplines,
-    editDiscipline, // @Deprecated
-    removeDiscipline, // @Deprecated
     USER_INFO_FIELDS
 };

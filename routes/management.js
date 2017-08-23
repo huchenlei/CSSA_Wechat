@@ -39,12 +39,13 @@ wss.on('connection', function (ws, req) {
                     break;
                 case "editDiscipline":
                     console.log('update discipline from', data.from, 'to', data.to)
-                    await dbAction.editDiscipline(data.from, data.to)
+                    await dbAction.addDiscipline(data.to)
+                    await dbAction.mergeDisciplines(data.to, [data.from])
                     response = "TB checked"
                     break;
                 case "removeDiscipline":
-                    console.log('removing', data)
-                    await dbAction.removeDiscipline(data)
+                    console.log('will not remove', data)
+                    // await dbAction.removeDiscipline(data)
                     response = "success"
                     break;
                 case "mergeDisciplines":

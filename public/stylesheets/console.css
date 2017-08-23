@@ -37,3 +37,15 @@ h1{
     cursor: pointer;    
     box-shadow: 0 0 1rem 0 rgba(0,0,0,0.62);
 }
+.fading{
+    animation:fade 0.7s ease forwards;
+}
+@keyframes fade{
+    from{
+        opacity:1;
+    }
+    to{
+        opacity:0;
+        display: none;
+    }
+}
