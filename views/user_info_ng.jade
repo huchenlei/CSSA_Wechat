@@ -1,0 +1,24 @@
+extends layout
+block content
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui")
+    link(rel="stylesheet", href="/stylesheets/weui.css")
+    link(rel="stylesheet" href="/stylesheets/user_info.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js")
+    script(src="/javascripts/user_info_ng.js")
+    - user = JSON.stringify(user); // hardcode pass user obj to ng
+    .container(ng-app="cssa", ng-controller="cssaController" ng-init="user=#{user}; openId='#{openId}'")
+        h1.center_text Member Info
+        form(ng-submit="updateUser()")
+            #message-box(class="{{message.type}}") {{message.content}}
+            .input-container
+                .weui-cell(ng-repeat="field in fields" ng-model="user")
+                    .weui-cell__hd
+                        label.weui-label(for="{{field.name}}") {{field.name}}
+                    .weui-cell__bd
+                        input.weui-input(
+                        type="{{field.type}}", name="{{field.name}}", id="{{field.name}}",
+                        value="{{user[field.name]}}", ng-model="user[field.name]" list="{{field.data}}")
+                datalist#disciplines
+                    option(ng-repeat="d in dList") {{d.name}}
+            button.weui-btn.weui-btn_primary(type='submit') Submit
+

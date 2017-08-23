@@ -22,7 +22,6 @@ router.route('/')
         }).catch(next);
     })
     .post((req, res, next) => {
-        console.log(req.body.name);
         dbAction.addDiscipline(req.body.name).then((dbResult) => {
             res.json({
                 status: 0

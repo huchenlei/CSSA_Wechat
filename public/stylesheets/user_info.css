@@ -1,20 +1,36 @@
-.container{
-    margin:1rem;;
-    display:flex;
-    flex-flow:column wrap;
+.container {
+    margin: 1rem;;
+    display: flex;
+    flex-flow: column wrap;
     align-content: center;
     justify-content: center;
 }
-.center_text{
+
+.center_text {
     text-align: center;
 }
-.weui-label{
+
+.weui-label {
     word-break: normal;
     word-wrap: normal;
 }
-.weui-btn{
-    margin:1rem 0;
-}
-form{
+
+.weui-btn {
     margin: 1rem 0;
+}
+
+form {
+    margin: 1rem 0;
+}
+
+.error-msg {
+    color: red;
+}
+
+.success-msg {
+    color: green;
+}
+
+#message-box {
+    text-align: center;
 }

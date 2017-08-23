@@ -9,10 +9,9 @@ const dbAction = require('../utils/db_action');
 require('any-promise/register/q');
 const request = require('request-promise-any');
 const _ = require('lodash');
-// const bodyParser = require('body-parser');
-// router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-// router.use(bodyParser.json());
-const parseMultipart = require('multer')().array()//need to use multer to parse ajax form data
+const bodyParser = require('body-parser');
+router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+router.use(bodyParser.json());
 
 /**
  * User scan QR code convert the qr code to a code copy page
@@ -62,15 +61,14 @@ router.route('/:openId')
                 if (req.xhr) {
                     res.json(user);
                 } else {
-                    res.locals.user = user;
+                    res.locals.user = _.pick(user, dbAction.USER_INFO_FIELDS);
                     res.locals.openId = openId;
                     res.locals.title = "Member Info";
-                    res.render('user_info');
+                    res.render('user_info_ng');
                 }
             }).catch(next);
     })
-    .put(parseMultipart, function (req, res, next) {
-        console.log(req.body);
+    .put(function (req, res, next) {
         const newInfo = _.pick(req.body, dbAction.USER_INFO_FIELDS);
         dbAction.updateMemberInfo(req.params.openId, newInfo)
             .then((dbResult) => {
