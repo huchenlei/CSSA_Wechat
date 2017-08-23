@@ -1,0 +1,40 @@
+[
+  {
+    "name": "情系CSSA",
+    "sub_button": [
+      {
+        "type": "view",
+        "name": "了解我们",
+        "key": "about",
+        "url": "http://mp.weixin.qq.com/s?__biz=MjM5NDAwMzM2MA==&mid=208190747&idx=1&sn=848d5aaa717467c3a4925c1b2dc1244e&scene=18#wechat_redirect"
+      },
+      {
+        "type": "view",
+        "name": "CSSA换届",
+        "key": "re_elect",
+        "url": "http://mp.weixin.qq.com/s?__biz=MjM5NDAwMzM2MA==&mid=503218005&idx=1&sn=f421fa8c6741136acb7c155693313e6c&chksm=3e84bf9a09f3368ccd14a912aaf34bba09a1df4225c78e976bb70666e1a93409a3ec4faee661#rd"
+      },
+      {
+        "type": "view",
+        "name": "CSSA官网",
+        "key": "official",
+        "url": "https://utcssa.ca/"
+      }
+    ]
+  },
+  {
+    "name": "会员",
+    "sub_button": [
+      {
+        "type": "scancode_waitmsg",
+        "name": "扫码绑卡",
+        "key": "bind_card"
+      },
+      {
+        "type": "click",
+        "name": "会员信息",
+        "key": "member_info"
+      }
+    ]
+  }
+]

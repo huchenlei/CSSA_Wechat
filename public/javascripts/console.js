@@ -1,11 +1,12 @@
 const ws = new WebSocket("ws://" + window.location.hostname + ":8080")
-const add = _$('.global-actions > .add')
-const merge = _$('.global-actions > .merge')
-const refresh = _$('.global-actions > .refresh')
-const msgQ = []
+const add = _$('.discplines-wrapper >.global-actions> .add')
+const merge = _$('.discplines-wrapper >.global-actions> .merge')
+const refresh = _$('.discplines-wrapper >.global-actions> .refresh')
+const menuItemsh2 = _$(".menu-wrapper > h2", document.body)
+const saveIcon = _$('div.weui-cells.menu-wrapper > i.weui-icon_msg')
 ws.onopen = () => {
-    msgQ.waiting = false
     sendMessage('getDisciplines')
+    sendMessage('getMenuItems')
 }
 ws.onmessage = ({ data }) => {
     console.log(data)
@@ -15,42 +16,31 @@ ws.onmessage = ({ data }) => {
             // data.response will be an array of disciplines
             loadDisciplines(dataObj.response)
             break;
+        case "getMenuItems":
+            // data.response will be json in plain text of the menu items
+            loadMenuItems(dataObj.response)
+            break;
+        case "saveMenuItems":
+            if (dataObj.response === "success") {
+                menuItemsh2.textContent = "Menu Items (Saved)"
+                changeMenuState("ready")
+            } else {
+                menuItemsh2.textContent = "Menu Items (Saving Failed due to " + dataObj.response + ")"
+                changeMenuState("error")
+            }
+            break;
     }
     // everytime got a response, dequeue
-    msgQ.clearOne()
 }
 
 ws.onclose = ev => {
     console.log(ev)
-    msgQ.waiting = true
     alert(ev.reason || 'Conection Error')
 }
 
 function sendMessage(type, data) {
-    msgQ.maybeSend(JSON.stringify({ type, data }))
+    ws.send(JSON.stringify({ type, data }))
 }
-
-Object.assign(msgQ, {
-    waiting: false,
-    maybeSend(message) {
-        if (!this.waiting) {
-            ws.send(message)
-            this.waiting = true
-        }
-        else {
-            this.push(message)
-            if (msgQ.length > 3) {
-                console.log('network slow, pending operations:\n', msgQ.join('\n'))
-            }
-        }
-    },
-    clearOne() {
-        this.shift();
-        this.waiting = false
-        if (this.length > 0)
-            this.maybeSend(this[0])
-    }
-})
 
 function loadDisciplines(disciplines) {
     const divDisciplines = new Disciplines(disciplines)
@@ -202,5 +192,67 @@ class Discipline extends Component {
         //     this.remove()
         // }
         return wrapper
+    }
+}
+
+/**
+ * After menu.json is returned from server, pass to this function to render the editor
+ * @param {string} jsonText 
+ */
+function loadMenuItems(jsonText) {
+    const editor = ace.edit("editor");
+    window.editor = editor
+    const session = editor.session
+    session.setMode("ace/mode/javascript");
+    session.setUseWrapMode(true);
+    //loads menu.json into the editor
+    session.setValue(jsonText);
+    //When a change happens, indicate ready to save
+    session.on('change', (e) => {
+        menuItemsh2.textContent = "Menu Items (Ctrl/Cmd+S to Save)"
+        changeMenuState("ready")
+    })
+    //Ctrl + S saving keybinding
+    editor.commands.addCommand({
+        name: 'Save',
+        bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+        exec: saveMenu,
+        readOnly: true // false if this command should not apply in readOnly mode
+    });
+    //clicking on the ico can also save the changes
+    saveIcon.onclick = ev => {
+        switch (saveIcon.classList[0]) {
+            case "weui-icon-success":
+                saveMenu(editor)
+                break;
+        }
+    }
+}
+
+/**
+ * Upload changes of the menu.json to server
+ * @param {object} an ace editor instance
+ */
+function saveMenu(editor) {
+    menuItemsh2.textContent = "Menu Items (Saving...)"
+    sendMessage("saveMenuItems", editor.getValue())
+    changeMenuState("saving")
+}
+
+/**
+ * Change the appearance of the save menu items icon
+ * @param {string} type, either "ready","saving",or "error"
+ */
+function changeMenuState(type) {
+    switch (type) {
+        case "ready":
+            saveIcon.className = "weui-icon-success weui-icon_msg"
+            break;
+        case "saving":
+            saveIcon.className = "weui-icon-waiting weui-icon_msg"
+            break;
+        case "error":
+            saveIcon.className = "weui-icon-warn weui-icon_msg"
+            break;
     }
 }

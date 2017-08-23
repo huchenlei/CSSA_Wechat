@@ -17,17 +17,13 @@ h1{
 .weui-btn{
     margin: 1rem;
 }
-.weui-btn:first-child,.weui-btn:last-child{
-    margin: 1rem 0;
+.weui-btn:first-child{
+    margin: 1rem 1rem 1rem 0;
 }
-@media screen and (min-width:40rem){
-    .disciplines{
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        max-height: 20rem;
-    }
+.weui-btn:last-child{
+    margin: 1rem 0 1rem 1rem;
 }
+
 .weui-btn:hover{
     cursor: pointer;
 }
@@ -47,5 +43,46 @@ h1{
     to{
         opacity:0;
         display: none;
+    }
+}
+#editor{
+    width:100%;
+    min-height: 30rem;
+    margin: 1rem 0;
+}
+.menu-wrapper > h2 {
+        display: inline-block;
+}
+.weui-icon_msg{
+    position: fixed;
+    right: 1rem;
+    bottom:1rem;
+    font-size: 3rem;
+    transition:all 0.3s ease;
+    margin: 1rem;
+    border-radius: 100%;
+    box-shadow: 0 0 0.5rem 0 rgba(0,0,0,0.62);
+    z-index: 1;
+}
+.weui-icon_msg:hover:not(:active){
+    cursor: pointer;
+    box-shadow: 0 0 1rem 0 rgba(0,0,0,0.62);
+}
+.weui-icon_msg:active{
+    cursor: pointer;    
+    box-shadow: 0 0 0.5rem 0 rgba(0,0,0,0.62);
+}
+@media screen and (min-width:40rem){
+    /* only on large screens */
+    .weui-icon_msg{
+        position: static;
+        font-size: 2rem;
+        float:right;            
+    }
+    .disciplines{
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        max-height: 20rem;
     }
 }
