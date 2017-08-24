@@ -13,21 +13,21 @@ mongoose.Promise = Promise; // Use q for mongoose promises
 const userSchema = mongoose.Schema({
     openId: String,
     detailedInfo: {
-        name: {type: String, default: ""},
-        graduation: {type: Number, default: 1970},
-        discipline: {type: String, default: ""},
-        email: {type: String, default: ""},
-        phone: {type: String, default: ""}
+        name: { type: String, default: "" },
+        graduation: { type: Number, default: 1970 },
+        discipline: { type: String, default: "" },
+        email: { type: String, default: "" },
+        phone: { type: String, default: "" }
     },
-    cssaCardNumber: {type: String, required: true, unique: true, dropDups: true},
+    cssaCardNumber: { type: String, required: true, unique: true, dropDups: true },
     cardAvailable: Boolean
-}, {minimize: false});
+}, { minimize: false });
 
 const disciplineSchema = mongoose.Schema({
-    name: {type: String, required: true, unique: true, dropDups: true}
+    name: { type: String, required: true, unique: true, dropDups: true }
 });
 
-const conn = mongoose.createConnection('mongodb://localhost:27017/CssaWechat', {useMongoClient: true});
+const conn = mongoose.createConnection('mongodb://localhost:27017/CssaWechat', { useMongoClient: true });
 const User = conn.model('users', userSchema); // The user model(use users collection in database)
 const Discipline = conn.model('disciplines', disciplineSchema);
 
@@ -80,19 +80,21 @@ function initializeDB() {
  * Bind the wechat user to specific card in database
  * @param openId unique wechat id for each wechat user
  * @param cardNumber private card number (unencrypted)
- * @return Object
+ * @return Promise
  */
-async function bindUser(openId, cardNumber) {
+function bindUser(openId, cardNumber) {
     const encryptedCardId = encryptCardId(cardNumber);
-    const card = await User.findOne({cssaCardNumber: encryptedCardId});
-    if (!card) throw "Sorry, the card number seems to be invalid";
-    if (!card.cardAvailable) throw "Sorry, the card is already bind to a wechat account";
-    const user = await User.findOne({openId: openId});
-    if (user) throw "Sorry, you are already a member of CSSA! You can not bind another card";
-    await User.updateOne(
-        {cssaCardNumber: encryptedCardId, cardAvailable: true},
-        {openId: openId, cardAvailable: false});
-    return {msg: "Bind card successful!"};
+    return User.findOne({ cssaCardNumber: encryptedCardId }).then((user) => {
+        if (!user) throw "Sorry, the card number seems to be invalid";
+        if (!user.cardAvailable) throw "Sorry, the card is already bind to a wechat account";
+    }).then(() => {
+        return User.updateOne(
+            { cssaCardNumber: encryptedCardId, cardAvailable: true },
+            { openId: openId, cardAvailable: false });
+    }
+        ).then(() => {
+            return "Bind card successful!";
+        }).catch(handleException);
 }
 
 /**
@@ -104,7 +106,7 @@ async function bindUser(openId, cardNumber) {
  */
 async function queryMemberInfo(openId, field) {
     let result = {};
-    let user = await User.findOne({openId: openId});
+    let user = await User.findOne({ openId: openId });
     if (!user) throw "Sorry, you are not yet a member of CSSA, please bind a card first";
     if (field) { // query specific field
         if (!(user.detailedInfo && user.detailedInfo[field]))
@@ -127,14 +129,14 @@ async function queryMemberInfo(openId, field) {
  */
 async function updateMemberInfo(openId, newInfo) {
     let result = {};
-    let user = await User.findOne({openId: openId});
+    let user = await User.findOne({ openId: openId });
     if (!user) throw "Sorry, you are not yet a member of CSSA, please bind a card first";
     result['msg'] = `${JSON.stringify(user.detailedInfo, null, 4)} => ${JSON.stringify(newInfo, null, 4)}`;
     let update = {};
     Object.keys(newInfo).map((key) => {
         update[`detailedInfo.${key}`] = newInfo[key];
     });
-    result['data'] = await User.updateOne({openId: openId}, {$set: update});
+    result['data'] = await User.updateOne({ openId: openId }, { $set: update });
     return result;
 }
 
@@ -144,12 +146,12 @@ async function updateMemberInfo(openId, newInfo) {
  * @return {Promise.<T>|Promise}
  */
 async function validateMember(openId) {
-    let user = await User.findOne({openId: openId});
+    let user = await User.findOne({ openId: openId });
     return user ?
         {
             'msg': `Yes, you are currently a member of CSSA! Your public key is ${user.cssaCardNumber}`,
             'data': true
-        } : {'msg': "Sorry, you are not a member of CSSA.", 'data': false}
+        } : { 'msg': "Sorry, you are not a member of CSSA.", 'data': false }
 }
 
 /**
@@ -184,9 +186,9 @@ async function mergeDisciplines(targetDis, dList) {
         assert(typeof discipline === 'string');
         // remove duplications in Discipline collection
         if (discipline !== targetDis)
-            await Discipline.remove({name: discipline}).exec();
+            await Discipline.remove({ name: discipline }).exec();
         // update the discipline field in user schema
-        await User.updateMany({'detailedInfo.discipline': discipline}, {$set: {'detailedInfo.discipline': targetDis}});
+        await User.updateMany({ 'detailedInfo.discipline': discipline }, { $set: { 'detailedInfo.discipline': targetDis } });
     }
 }
 
@@ -199,8 +201,8 @@ async function mergeDisciplines(targetDis, dList) {
 async function editDiscipline(oldname, newname) {
     // TODO: this does not work
     if (typeof (oldname) !== "string" || typeof (newname) !== "string") throw new Error('Discipline name must be a string')
-    await Discipline.updateOne({name: oldname}, {$set: {name: newname}})
-    await User.updateMany({'detailedInfo.discipline': oldname}, {$set: {'detailedInfo.discipline': newname}});
+    await Discipline.updateOne({ name: oldname }, { $set: { name: newname } })
+    await User.updateMany({ 'detailedInfo.discipline': oldname }, { $set: { 'detailedInfo.discipline': newname } });
 }
 
 /**
@@ -210,8 +212,8 @@ async function editDiscipline(oldname, newname) {
  */
 async function removeDiscipline(name) {
     if (typeof (name) !== "string") throw new Error('Discipline name must be a string')
-    await Discipline.remove({name}).exec();
-    await User.updateMany({'detailedInfo.discipline': name}, {$set: {'detailedInfo.discipline': "(discontinued)" + name}});
+    await Discipline.remove({ name }).exec();
+    await User.updateMany({ 'detailedInfo.discipline': name }, { $set: { 'detailedInfo.discipline': "(discontinued)" + name } });
 }
 
 module.exports = {
