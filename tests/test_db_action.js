@@ -21,7 +21,7 @@ describe('initializeDB & getDisciplines & bindUser', function () {
         disciplines.should.be.a('Array');
         disciplines.should.have.lengthOf.above(0);
 
-        bindResult.toLowerCase().should.include('success');
+        bindResult.msg.toLowerCase().should.include('success');
     });
     it('Should not allow same card bind twice', async function () {
         dbAction.bindUser(registeredOpenId, cardPool[0]).should.be.rejected;

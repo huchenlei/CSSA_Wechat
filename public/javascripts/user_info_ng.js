@@ -40,26 +40,31 @@ cssa.controller('cssaController', function ($scope, $http) {
                 // Fail
                 $scope.message = {
                     type: "error-msg",
-                    content: originalContent + "\n" + res.data.error
+                    content: originalContent + "\n" + JSON.stringify(res.data.error)
                 };
             } else {
                 // Success
-                $scope.message = {
-                    type: "success-msg",
-                    content: originalContent + "\nsuccess!"
+                if (!($scope.message && $scope.message.type === "error-msg")) {
+                    $scope.message = {
+                        type: "success-msg",
+                        content: "success!"
+                    }
                 }
             }
         }
 
-        $scope.message = {}; // Clear message box
-        console.log($scope.dList.find(d => {
-            return d.name === $scope.user.discipline;
-        }));
         if ($scope.dList.find(d => {
                 return d.name === $scope.user.discipline;
             }) === undefined) {
-            $http.post('/discipline', {name: $scope.user.discipline}).then(handleResponse);
+            let d = {name: $scope.user.discipline};
+            $scope.dList.push(d); // Add new discipline locally
+            $http.post('/discipline', d).then(handleResponse);
         }
         $http.put(`/user/${$scope.openId}`, $scope.user).then(handleResponse);
+
+        // The info message will last 5s
+        setTimeout(function () {
+            $scope.message = {};
+        }, 5000);
     }
 });

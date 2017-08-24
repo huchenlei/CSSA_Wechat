@@ -6,7 +6,7 @@ block content
     script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js")
     script(src="/javascripts/user_info_ng.js")
     - user = JSON.stringify(user); // hardcode pass user obj to ng
-    .container(ng-app="cssa", ng-controller="cssaController" ng-init="user=#{user}; openId='#{openId}'")
+    .container(ng-app="cssa", ng-controller="cssaController" ng-init="user=#{user}; openId='#{openId}'; message={content:''}")
         h1.center_text Member Info
         form(ng-submit="updateUser()")
             #message-box(class="{{message.type}}") {{message.content}}

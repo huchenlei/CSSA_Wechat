@@ -9,6 +9,7 @@ const router = express.Router();
 const dbAction = require('../utils/db_action');
 
 const DOMAIN_ADDRESS = "utcssa.info";
+const WELCOME_STR = require('fs').readFileSync('./config/welcome.txt').toString('utf-8');
 
 /**
  * This function dispatches user input to different database related actions
@@ -38,7 +39,9 @@ validate the membership of current wechat user`;
         if ((messageTokens.length - 1) != assertParamNumber) throw usage;
     }
 
-    if (command === "bind") {
+    if (/.*[\u4e00-\u9fa5]+.*$/.test(command)) { // contains Chinese
+        throw WELCOME_STR;
+    } else if (command === "bind") {
         checkParamNumber(1);
         // Bind the wechat openid to corresponding card number
         return dbAction.bindUser(openId, messageTokens[1]);
@@ -66,21 +69,21 @@ validate the membership of current wechat user`;
 
 const config = require('./../config/wechat_config');
 router.use(express.query());
-router.post('/', wechat(config, function (req, res, next) {
+router.post('/', wechat(config, async function (req, res, next) {
     function replyMessage(message) {
         console.log(`Replying ${message}`);
         res.reply(message);
     }
 
     const data = req.weixin;
-    console.log(`data pack is ${data}`); // Debugging
+    console.log(`data pack is ${JSON.stringify(data)}`); // Debugging
     const openId = data.FromUserName;
 
     let message;
     if (data.Event) {
         if (data.Event === 'scancode_waitmsg') { // QRCode scan bind card
             const scanUrl = data.ScanCodeInfo.ScanResult;
-            const urlPattern = /'http:\/\/.+?\?serial=(.+)$'/;
+            const urlPattern = /http:\/\/.+?\?serial=(.+)$/;
             let serial;
             if (urlPattern.test(scanUrl)) {
                 serial = urlPattern.exec(scanUrl)[1]; // Extract serial code from url
@@ -118,14 +121,11 @@ router.post('/', wechat(config, function (req, res, next) {
     }
 
     try {
-        processCommandlineInput(message, openId).then((result) => {
-            replyMessage(result['msg']);
-        });
+        const result = await processCommandlineInput(message, openId);
+        replyMessage(result['msg']);
     } catch (e) {
         replyMessage(e);
     }
-    // Continue with other routes
-    next();
 }));
 
 

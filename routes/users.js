@@ -9,9 +9,6 @@ const dbAction = require('../utils/db_action');
 require('any-promise/register/q');
 const request = require('request-promise-any');
 const _ = require('lodash');
-const bodyParser = require('body-parser');
-router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-router.use(bodyParser.json());
 
 /**
  * User scan QR code convert the qr code to a code copy page
@@ -58,7 +55,7 @@ router.route('/:openId')
         dbAction.queryMemberInfo(openId)
             .then((dbResult) => {
                 const user = dbResult.data;
-                if (req.xhr) {
+                if (req['expect-json']) {
                     res.json(user);
                 } else {
                     res.locals.user = _.pick(user, dbAction.USER_INFO_FIELDS);

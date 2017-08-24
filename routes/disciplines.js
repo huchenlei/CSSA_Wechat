@@ -7,9 +7,6 @@ const express = require('express');
 const dbAction = require('../utils/db_action');
 const _ = require('lodash');
 const router = express.Router();
-const bodyParser = require('body-parser');
-router.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
-router.use(bodyParser.json());
 
 router.route('/')
     .get((req, res, next) => {
