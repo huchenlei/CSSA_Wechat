@@ -28,5 +28,5 @@ const devPlatform = {
   checkSignature: false
 };
 
-module.exports = devPlatform;
+module.exports = production;
 

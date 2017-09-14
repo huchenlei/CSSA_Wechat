@@ -11,6 +11,7 @@ const config = require('../config/wechat_config');
 // const scope = 'snsapi_base';
 // const oauthUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appid}&redirect_uri=${originalUrl}&response_type=code&scope=${scope}`;
 const menuItems = JSON.parse(require('fs').readFileSync('./config/menu.json'));
+const should = require('chai').should();
 
 let token;
 
@@ -53,5 +54,5 @@ describe('createMenuItem', function () {
         let result = await wechatAction.queryMenuItem(token);
         result.should.be.a('object');
         result.should.have.property('menu');
-    })
+    });
 });
