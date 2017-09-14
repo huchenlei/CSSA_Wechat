@@ -85,8 +85,8 @@ async function readMenu() {
     // let result = await wechatAction.queryMenuItem(token);
     // console.log('current menu', result)
     return new Promise((accept, reject) => {
-        // fs.readFile('./config/menu.json', (err, data) => {
-        fs.readFile('./config/menu-mock.json', (err, data) => {
+        fs.readFile('./config/menu.json', (err, data) => {
+        // fs.readFile('./config/menu-mock.json', (err, data) => {
             if (err) {
                 reject(err)
             } else {
@@ -103,9 +103,9 @@ async function saveMenu(jsonText) {
         throw "Invalid JSON"
     }
     const writeToDisk = new Promise((accept, reject) => {
-        // fs.writeFile('./config/menu.json', jsonText, (err) => {
+        fs.writeFile('./config/menu.json', jsonText, (err) => {
         // Using a mock menu.json now for testing
-        fs.writeFile('./config/menu-mock.json', jsonText, (err) => {
+        // fs.writeFile('./config/menu-mock.json', jsonText, (err) => {
             if (err) {
                 reject(err)
             } else {
